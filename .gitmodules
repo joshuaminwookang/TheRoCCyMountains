@@ -1,0 +1,3 @@
+[submodule "sha3"]
+	path = sha3
+	url = https://github.com/ucb-bar/sha3.git
