@@ -4,3 +4,6 @@
 [submodule "rocket-chip"]
 	path = rocket-chip
 	url = https://github.com/chipsalliance/rocket-chip.git
+[submodule "lowrisc-rocket"]
+	path = lowrisc-rocket
+	url = https://github.com/lowRISC/rocket-chip.git
