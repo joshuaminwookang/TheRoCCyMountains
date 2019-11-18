@@ -28,8 +28,10 @@ int main(void)
     result2 = ephelia_add(0,4);
     sum = ephelia_add(1,4);
 
-	if (sun != (result1+result2)){
-        printf(" TEST FAILED ARGHGHGHGHGHGH \n");
+	if (sum == (result1+result2)){
+        printf(" TEST Successful \n");
+    } else{
+	printf(" TEST FAILED ARGHGHGHGHGHGH \n");
         return 1;
     }
     
