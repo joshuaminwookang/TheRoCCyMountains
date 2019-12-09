@@ -15,8 +15,8 @@ class MapBloomModule(val M: Int, val K: Int) extends Module {
     val output_hashBits = Vec(1*M, UInt(OUTPUT,64))
   }
 
-    val x = io.input_value
-    val y = x >> 4
+    val x = RegInit(io.input_value)
+    val y = RegInit(x >> 4)
 
     for(i <- 0 until K) {
         x := (x + y) % UInt(K)
