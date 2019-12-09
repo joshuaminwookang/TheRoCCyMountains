@@ -27,14 +27,19 @@ class MapBloomModule(val M: Int, val K: Int) extends Module {
     // }
 
      // Local variables
-    val x  = RegInit(io.input_value)
-    val y  = RegInit(io.input_value >> 4)
+    val x  = RegInit(0.U(64.W))
+    val y  = RegInit(0.U(64.W))
     val i  = RegInit(0.U(64.W))
-
-    val done = (i === K.asUInt(64.W)
+    val done = (i === K.asUInt(64.W))
   
     // Hash computation
-    x := Mux(~done, (x + y) % K.asUInt(64.W), x)
-    y := Mux(~done, (y + i) % K.asUInt(64.W), y)
-    io.output_hashBits(x) := 1.U(1.W)
+ 
+    when(i === 0.U(64.W)){
+      x := io.input_value
+      y := x >> 4
+    } otherwise {
+      x := Mux(~done, (x + y) % K.asUInt(64.W), x)  
+      y := Mux(~done, (y + i) % K.asUInt(64.W), y)
+      io.output_hashBits(x) := 1.U(1.W)
+    }
 }
