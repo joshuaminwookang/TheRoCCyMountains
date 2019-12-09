@@ -11,11 +11,11 @@ import scala.util.Random
 class MapBloomModule(val M: Int, val K: Int) extends Module {
   //val W = 64
   val io = new Bundle { 
-    val input_value = UInt(INPUT, 64)
+    val input_value = Input(UInt(64.W))
     val output_hashBits = Vec(1*M, UInt(OUTPUT,64))
   }
 
-    val x = RegInit(io.input_value)
+    val x = RegInit(io.input_value + 0.U)
     val y = RegInit(x >> 4)
 
     for(i <- 0 until K) {
