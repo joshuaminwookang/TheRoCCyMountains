@@ -29,9 +29,7 @@ class MapBloomModule(val M: Int, val K: Int) extends Module {
     val y  = RegInit(io.input_value >> 4)
     val i  = RegInit(0.U(64.W))
 
-    val nextX = (x + y) % UInt(K)
-    val nextY = (y + UInt(i)) % UInt(K)
-    val done = i === K.asUInt(64.W)
+    val done = (i === K.asUInt(64.W))
   
     // Hash computation
     x := Mux(~done, (x + y) % K.asUInt(64.W), x)
