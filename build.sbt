@@ -2,6 +2,6 @@ organization := "edu.williams.cs"
 
 version := "1.2"
 
-name := "ephelia"
+name := "bloom"
 
 scalaVersion := "2.12.4"

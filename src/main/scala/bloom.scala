@@ -12,7 +12,7 @@ import freechips.rocketchip.tilelink._
 import freechips.rocketchip.tile._
 import freechips.rocketchip.util.InOrderArbiter
 
-class BloomAccel(opcodes: OpcodeSet,val m: Int = 20000, val k: Int = 5, val h_num: Int = 5381)
+class BloomAccel(opcodes: OpcodeSet, val m: Int = 20000, val k: Int = 5)
 (implicit p: Parameters) extends LazyRoCC(
     opcodes) {
   override lazy val module = new BloomAccelImp(this)
@@ -23,7 +23,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   // accelerator memory 
   val bloom_bit_array = Mem(outer.m, UInt(width = 1))
   val missCounter = Mem(1, UInt(width = 64))
-  val busy = Reg(init = Vec.fill(outer.n){Bool(false)})
+  val busy = Reg(init = Vec.fill(outer.m){Bool(false)})
 
   val cmd = Queue(io.cmd)
   val funct = cmd.bits.inst.funct
@@ -34,7 +34,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   val doMap = funct === UInt(1)
   val doTest = funct === UInt(2)
   val doResetMissCount = funct === UInt(3)
-  val wdata = BigInt(0)
+  val wdata = UInt(0)
 
   when (cmd.fire()) {
     when (doMap) {
@@ -42,10 +42,10 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
       val y = x >> 4
 
       for(i <- 0 until outer.k) {
-        x := (x + y) % outer.k
-        y := (y + i) % outer.k
-        bloom_bit_array[x] := 1
-        wdata := wdata*outer.m + x
+        x := (x + y) % UInt(outer.k)
+        y := (y + UInt(i)) % UInt(outer.k)
+        bloom_bit_array(x) := UInt(1)
+        wdata := wdata * UInt(outer.m) + x 
       }
     }
   }
@@ -85,7 +85,7 @@ class WithBloomAccel extends Config ((site, here, up) => {
   case BuildRoCC => Seq(
     (p: Parameters) => {
       val bloom = LazyModule.apply(new BloomAccel(OpcodeSet.custom2)(p))
-      ephelia
+      bloom
     }
   )
 })
