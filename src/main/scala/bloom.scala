@@ -20,8 +20,8 @@ class BloomAccel(opcodes: OpcodeSet, val m: Int = 20000, val k: Int = 5)
 
 class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCModuleImp(outer) {
   // accelerator memory 
-  val bloom_bit_array = Reg(init = Vec.fill(outer.m){UInt(0)})
-  val miss_counter = Reg(init = Vec.fill(1){UInt(0)})
+  val bloom_bit_array = Reg(init = Vec.fill(outer.m){0.U(1.W)})
+  val miss_counter = Reg(init = Vec.fill(1){0.U(1.W)})
   val busy = Reg(init = Vec.fill(outer.m){Bool(false)})
 
   val cmd = Queue(io.cmd)
@@ -29,10 +29,10 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   val hashed_string = cmd.bits.rs1
 
   // decode RoCC custom function
-  val doInitBloom = funct === UInt(0)
+  // val doInitBloom = funct === UInt(0)
   val doMap = funct === UInt(1)
-  val doTest = funct === UInt(2)
-  val doResetMissCount = funct === UInt(3)
+  // val doTest = funct === UInt(2)
+  // val doResetMissCount = funct === UInt(3)
   val wdata = UInt(0)
 
   val mapModule = Module(new MapBloomModule(outer.m,outer.k))
