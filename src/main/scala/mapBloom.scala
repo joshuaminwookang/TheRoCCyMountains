@@ -36,5 +36,5 @@ class MapBloomModule(val M: Int, val K: Int) extends Module {
     // Hash computation
     x := Mux(~done, (x + y) % K.asUInt(64.W), x)
     y := Mux(~done, (y + i) % K.asUInt(64.W), y)
-    io.output_hashBits(x) := 1.(1.W)
+    io.output_hashBits(x) := 1.U(1.W)
 }
