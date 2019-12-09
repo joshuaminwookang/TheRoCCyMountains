@@ -15,12 +15,26 @@ class MapBloomModule(val M: Int, val K: Int) extends Module {
     val output_hashBits = Output(Reg(Vec(M,UInt(1.W))))
   }
 
-    val x = RegNext(io.input_value)
-    val y = RegInit(0.U(64.W))
+    // val x = RegNext(io.input_value)
+    // val y = RegInit(0.U(64.W))
 
-    for(i <- 0 until K) {
-        x := (x + y) % UInt(K)
-        y := (y + UInt(i)) % UInt(K)
-        io.output_hashBits(x) := UInt(1)
-    }
+    // for(i <- 0 until K) {
+    //     x := (x + y) % UInt(K)
+    //     y := (y + UInt(i)) % UInt(K)
+    //     io.output_hashBits(x) := UInt(1)
+    // }
+
+     // Local variables
+    val x  = RegInit(io.input_value)
+    val y  = RegInit(io.input_value >> 4)
+    val i  = RegInit(0.U(64.W))
+
+    val nextX = (x + y) % UInt(K)
+    val nextY = (y + UInt(i)) % UInt(K)
+    val done = i === K.asUInt(64.W)
+  
+    // Hash computation
+    x := Mux(~done, (x + y) % K.asUInt(64.W), x)
+    y := Mux(~done, (y + i) % K.asUInt(64.W), y)
+    io.output_hashBits(x) := 1.(1.W)
 }
