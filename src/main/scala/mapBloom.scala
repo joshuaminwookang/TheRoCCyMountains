@@ -2,7 +2,8 @@
 //authors: Colin Schmidt, Adam Izraelevitz
 package bloom
 
-import chisel3._
+import Chisel._
+
 import chisel3.util._
 import chisel3.iotesters.PeekPokeTester
 import scala.collection.mutable.HashMap
@@ -30,7 +31,7 @@ class MapBloomModule(val M: Int, val K: Int) extends Module {
     val y  = RegInit(io.input_value >> 4)
     val i  = RegInit(0.U(64.W))
 
-    val done = (i === K.asUInt(64.W))
+    val done = (i === K.asUInt(64.W)
   
     // Hash computation
     x := Mux(~done, (x + y) % K.asUInt(64.W), x)
