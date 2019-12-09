@@ -20,8 +20,8 @@ class BloomAccel(opcodes: OpcodeSet, val m: Int = 20000, val k: Int = 5)
 
 class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCModuleImp(outer) {
   // accelerator memory 
-  val bloom_bit_array = Reg(init = Vec.fill(outer.m){0.U(1.W)})
-  val miss_counter = Reg(init = Vec.fill(1){0.U(1.W)})
+  val bloom_bit_array = RegInit(VecInit(Seq.fill(outer.m)(0.U(1.W))))
+  val miss_counter = Reg(init = Vec.fill(1){0.U(64.W)})
   val busy = Reg(init = Vec.fill(outer.m){Bool(false)})
 
   val cmd = Queue(io.cmd)
@@ -29,18 +29,28 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   val hashed_string = cmd.bits.rs1
 
   // decode RoCC custom function
-  // val doInitBloom = funct === UInt(0)
+  val doInit = funct === UInt(0)
   val doMap = funct === UInt(1)
-  // val doTest = funct === UInt(2)
-  // val doResetMissCount = funct === UInt(3)
-  val wdata = UInt(0)
+  val doTest = funct === UInt(2)
 
+  // val wdata = UInt(0)
+  val testMatch = RegInit(Bool(true))
   val mapModule = Module(new MapBloomModule(outer.m,outer.k))
+  val testModule = Module(new TestBloomModule(outer.m,outer.k)) 
 
   when (cmd.fire()) {
+    when (doInit) {
+      bloom_bit_array := RegInit(VecInit(Seq.fill(outer.m)(0.U(1.W))))
+      miss_counter = Reg(init = Vec.fill(1){0.U(1.W)})
+    }
     when (doMap) {
       mapModule.io.input_value := hashed_string
       bloom_bit_array := mapModule.io.output_hashBits 
+    }
+    when (doTest) {
+      testModule.io.input_value := hashed_string
+      testModule.io.input_bit_array := bloom_bit_array
+      miss_counter := Mux(testModule.io.output_boolean, miss_counter, miss_counter+1)
     }
   }
 
@@ -55,7 +65,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
     // Valid response if valid command, need a response, and no stalls
   io.resp.bits.rd := cmd.bits.inst.rd
     // Write to specified destination register address
-  io.resp.bits.data := wdata
+  io.resp.bits.data := miss_counter
     // Send out 
   io.busy := cmd.valid || busy.reduce(_||_)
     // Be busy when have pending memory requests or committed possibility of pending requests

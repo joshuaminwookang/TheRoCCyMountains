@@ -14,7 +14,7 @@
 static inline unsigned long hw_mapToBloom(int rs1)
 {
     unsigned long rd;
-	ROCC_INSTRUCTION_DSS(2, rd, rs1, rs2, 0);
+	ROCC_INSTRUCTION_DS(2, rd, rs1, 1);
 	return rd;
 }
 
