@@ -21,7 +21,7 @@ class BloomAccel(opcodes: OpcodeSet, val m: Int = 20000, val k: Int = 5)
 class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCModuleImp(outer) {
   // accelerator memory 
   val bloom_bit_array = Reg(init = Vec.fill(outer.m){UInt(0)})
-  val busy = Reg(init = 0){UInt(width = 64)}
+  val miss_counter = Reg(init = 0){UInt(width = 64)}
   val busy = Reg(init = Vec.fill(outer.m){Bool(false)})
 
   val cmd = Queue(io.cmd)
@@ -35,7 +35,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   val doResetMissCount = funct === UInt(3)
   val wdata = UInt(0)
 
-  val mapModule = Module(new MapBloomModule(M,K))
+  val mapModule = Module(new MapBloomModule(outer.m,outer.k))
 
   when (cmd.fire()) {
     when (doMap) {
