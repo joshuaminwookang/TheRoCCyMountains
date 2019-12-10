@@ -31,8 +31,6 @@ class TestBloomModule(val M: Int, val K: Int) extends Module {
     
     done := (i === K.asUInt(64.W)) || (bit === 0.U(1.W))
 
-    io.output_busy := !done
-
     switch(state_reg) {
       is (s_idle) {
         when(io.input_reset){
@@ -43,6 +41,9 @@ class TestBloomModule(val M: Int, val K: Int) extends Module {
           io.output_bit := 0.U(1.W)
           // get into hashing state
           state_reg := s_hash
+          io.output_busy := true.B
+        } otherwise {
+          io.output_busy := false.B
         }
       }
       is (s_hash) {
@@ -51,6 +52,7 @@ class TestBloomModule(val M: Int, val K: Int) extends Module {
         y := (y + i) % K.asUInt(64.W)
         bit := io.input_bit_array(x)
         io.output_bit := ~bit
+        io.output_busy := true.B
         when (done) {
           state_reg := s_resp
         }
@@ -58,6 +60,8 @@ class TestBloomModule(val M: Int, val K: Int) extends Module {
       is (s_resp) {
         bit := io.input_bit_array(x)
         io.output_bit := ~bit
+        io.output_busy := false.B
+        state_reg := s_idle
       }
     }
 }

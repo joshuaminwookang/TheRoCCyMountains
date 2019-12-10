@@ -53,6 +53,9 @@ class MapBloomModule(val M: Int, val K: Int) extends Module {
           io.output_hashIndex := x
           // get into hashing state
           state_reg := s_hash
+          io.output_busy := true.B
+        } otherwise {
+          io.output_busy := false.B
         }
       }
       is (s_hash) {
@@ -61,7 +64,7 @@ class MapBloomModule(val M: Int, val K: Int) extends Module {
         y := (y + i) % K.asUInt(64.W)
         io.output_hashBits(x) := 1.U(1.W)
         io.output_hashIndex := x
-
+        io.output_busy := true.B
         // are we done hashing?
         when (done) {
           state_reg := s_resp
@@ -71,6 +74,7 @@ class MapBloomModule(val M: Int, val K: Int) extends Module {
       is (s_resp) {
         io.output_hashBits(x) := 1.U(1.W)
         io.output_hashIndex := x
+        state_reg := s_idle
       }
     }
 }
