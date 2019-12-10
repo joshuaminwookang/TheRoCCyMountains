@@ -16,6 +16,7 @@ class TestBloomModule(val M: Int, val K: Int) extends Module {
     val input_bit_array = Input(Reg(Vec(M,UInt(1.W))))
     val input_reset = Input(Bool())
     val output_bit = Output(UInt(1.W))
+    val output_busy = Output(Bool())
   }
      // Local variables
     val x  = RegInit(0.U(64.W))
@@ -30,6 +31,7 @@ class TestBloomModule(val M: Int, val K: Int) extends Module {
       x := io.input_value
       y := io.input_value >> 4
       bit := RegInit(1.U(1.W))
+      io.output_bit := 0.U(1.W)
     } otherwise {
       i := i + 1.U(64.W)
       x := Mux(~done, (x + y) % K.asUInt(64.W), x)  
@@ -37,4 +39,6 @@ class TestBloomModule(val M: Int, val K: Int) extends Module {
       bit := io.input_bit_array(x)
       io.output_bit := ~bit
     }
+
+    io.output_busy <> done
 }

@@ -16,6 +16,7 @@ class MapBloomModule(val M: Int, val K: Int) extends Module {
     val input_reset = Input(Bool())
     val output_hashBits = Output(Reg(Vec(M,UInt(1.W))))
     val output_hashIndex = Output(UInt(64.W))
+    val output_busy = Output(Bool())
   }
      // Local variables
     val x  = RegInit(0.U(64.W))
@@ -35,4 +36,6 @@ class MapBloomModule(val M: Int, val K: Int) extends Module {
       io.output_hashBits(x) := 1.U(1.W)
       io.output_hashIndex := x
     }
+
+    io.output_busy <> done
 }

@@ -22,7 +22,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   // accelerator memory 
   val bloom_bit_array = Reg(init = Vec.fill(outer.m)(0.U(1.W)))
   val miss_counter = RegInit(0.U(64.W))
-  val busy = Reg(init = Vec.fill(outer.m){Bool(false)})
+  val busy = RegInit(Bool(false))
 
   val cmd = Queue(io.cmd)
   val funct = cmd.bits.inst.funct
@@ -64,6 +64,8 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
     testModule.io.input_reset := false.B
   }
 
+  busy := mapModule.io.output_busy || mapModule.io.input_busy
+
   // PROCESSOR RESPONSE INTERFACE
   // Control for communicate accelerator response back to host processor
   val doResp = cmd.bits.inst.xd
@@ -78,7 +80,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   //io.resp.bits.data := miss_counter
   io.resp.bits.data := Mux(doMap, map_counter, miss_counter)
     // Send out 
-  io.busy := cmd.valid || busy.reduce(_||_)
+  io.busy := cmd.valid || busy
     // Be busy when have pending memory requests or committed possibility of pending requests
   io.interrupt := Bool(false)
     // Set this true to trigger an interrupt on the processor (not the case for our current simplified implementation)
