@@ -14,6 +14,7 @@ class TestBloomModule(val M: Int, val K: Int) extends Module {
   val io = new Bundle { 
     val input_value = Input(UInt(64.W))
     val input_bit_array = Input(Reg(Vec(M,UInt(1.W))))
+    val input_reset = Input(UInt(1.W))
     val output_bit = Output(UInt(1.W))
   }
      // Local variables
@@ -28,6 +29,7 @@ class TestBloomModule(val M: Int, val K: Int) extends Module {
     when(i === 0.U(64.W)){
       x := io.input_value
       y := x >> 4
+      bit := io.input_reset
     } otherwise {
       x := Mux(~done, (x + y) % K.asUInt(64.W), x)  
       y := Mux(~done, (y + i) % K.asUInt(64.W), y)
