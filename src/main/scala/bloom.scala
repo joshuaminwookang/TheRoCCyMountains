@@ -50,14 +50,13 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
     when (doMap) {
       mapModule.io.input_value := hashed_string
       bloom_bit_array := mapModule.io.output_hashBits 
-      // map_counter := map_counter+1.U(64.W)
+      map_counter := mapModule.io.output_hashBits 
     }
     when (doTest) {
       testModule.io.input_value := hashed_string
       testModule.io.input_bit_array := bloom_bit_array
-      miss_counter := Mux(testModule.io.output_boolean, miss_counter, miss_counter+1.U(64.W))
+      miss_counter := Mux(testModule.io.output_boolean === 1.U(1.W), miss_counter, miss_counter+1.U(64.W))
       // miss_counter := miss_counter+1.U(64.W))
-      // test_counter := test_counter+1.U(64.W)
     }
   }
 
@@ -72,8 +71,8 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
     // Valid response if valid command, need a response, and no stalls
   io.resp.bits.rd := cmd.bits.inst.rd
     // Write to specified destination register address
-  io.resp.bits.data := miss_counter
-  // io.resp.bits.data := Mux(doMap, map_counter, test_counter)
+  //io.resp.bits.data := miss_counter
+  io.resp.bits.data := Mux(doMap, map_counter, miss_counter)
     // Send out 
   io.busy := cmd.valid || busy.reduce(_||_)
     // Be busy when have pending memory requests or committed possibility of pending requests
