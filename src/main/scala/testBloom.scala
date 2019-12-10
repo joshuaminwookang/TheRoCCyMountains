@@ -47,7 +47,7 @@ class TestBloomModule(val M: Int, val K: Int) extends Module {
       is (s_hash) {
         i := i + 1.U(64.W)
         x := (x + y) % K.asUInt(64.W)  
-        y := (y + i) % K.asUInt(64.W
+        y := (y + i) % K.asUInt(64.W)
         bit := io.input_bit_array(x)
         io.output_bit := ~bit
         done := (i === K.asUInt(64.W)) || (bit === 0.U(1.W))
