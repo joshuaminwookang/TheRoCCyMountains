@@ -21,7 +21,7 @@ class TestBloomModule(val M: Int, val K: Int) extends Module {
     val x  = RegInit(0.U(64.W))
     val y  = RegInit(0.U(64.W))
     val i  = RegInit(0.U(64.W))
-    val found = RegInit(0.UInt(1.W))
+    val found = RegInit(0.U(1.W))
     val done = (i === K.asUInt(64.W)) 
   
     // Hash computation
