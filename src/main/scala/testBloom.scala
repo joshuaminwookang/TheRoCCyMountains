@@ -1,7 +1,7 @@
 //see LICENSE for license
 package bloom
 
-import Chisel._
+// import Chisel._
 
 import chisel3.util._
 import chisel3.iotesters.PeekPokeTester
