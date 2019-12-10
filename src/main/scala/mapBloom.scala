@@ -41,8 +41,6 @@ class MapBloomModule(val M: Int, val K: Int) extends Module {
     //   io.output_hashIndex := x
     // }
 
-    io.output_busy := !done
-
     switch(state_reg) {
       is (s_idle) {
         when(io.input_reset){
@@ -75,6 +73,7 @@ class MapBloomModule(val M: Int, val K: Int) extends Module {
         io.output_hashBits(x) := 1.U(1.W)
         io.output_hashIndex := i
         state_reg := s_idle
+        io.output_busy := false.B
       }
     }
 }
