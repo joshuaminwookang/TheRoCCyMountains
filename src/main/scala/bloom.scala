@@ -64,7 +64,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
     testModule.io.input_reset := false.B
   }
 
-  busy := mapModule.io.output_busy || mapModule.io.input_busy
+  busy := mapModule.io.output_busy || testModule.io.output_busy
 
   // PROCESSOR RESPONSE INTERFACE
   // Control for communicate accelerator response back to host processor
