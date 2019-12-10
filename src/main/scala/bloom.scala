@@ -81,7 +81,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   io.resp.bits.data := Mux(doMap, map_counter, miss_counter)
     // Send out 
   // io.busy := cmd.valid || busy
-  io.bisy := busy
+  io.busy := busy
     // Be busy when have pending memory requests or committed possibility of pending requests
   io.interrupt := Bool(false)
     // Set this true to trigger an interrupt on the processor (not the case for our current simplified implementation)
