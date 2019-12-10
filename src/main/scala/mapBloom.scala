@@ -27,7 +27,7 @@ class MapBloomModule(val M: Int, val K: Int) extends Module {
     when(io.input_reset){
       i := RegInit(0.U(64.W))
       x := io.input_value
-      y := x >> 4
+      y := io.input_value >> 4
     } otherwise {
       i := i + 1.U(64.W)
       x := Mux(~done, (x + y) % K.asUInt(64.W), x)  
