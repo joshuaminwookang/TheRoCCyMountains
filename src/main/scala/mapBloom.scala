@@ -1,5 +1,4 @@
 //see LICENSE for license
-//authors: Colin Schmidt, Adam Izraelevitz
 package bloom
 
 import Chisel._

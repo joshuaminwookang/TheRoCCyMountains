@@ -1,5 +1,4 @@
 //see LICENSE for license
-//authors: Colin Schmidt, Adam Izraelevitz
 package bloom
 
 import Chisel._
@@ -15,14 +14,14 @@ class TestBloomModule(val M: Int, val K: Int) extends Module {
   val io = new Bundle { 
     val input_value = Input(UInt(64.W))
     val input_bit_array = Input(Reg(Vec(M,UInt(1.W))))
-    val output_boolean = Output(UInt(1.W))
+    val output_bit = Output(UInt(1.W))
   }
      // Local variables
     val x  = RegInit(0.U(64.W))
     val y  = RegInit(0.U(64.W))
     val i  = RegInit(0.U(64.W))
-    val found = RegInit(0.U(1.W))
-    val done = (i === K.asUInt(64.W)) 
+    val bit = RegInit(1.U(1.W))
+    val done = (i === K.asUInt(64.W))  || (bit === 0.U(1.W))
   
     // Hash computation
  
@@ -32,7 +31,7 @@ class TestBloomModule(val M: Int, val K: Int) extends Module {
     } otherwise {
       x := Mux(~done, (x + y) % K.asUInt(64.W), x)  
       y := Mux(~done, (y + i) % K.asUInt(64.W), y)
-      found := io.input_bit_array(x)
-      io.output_boolean := ~found
+      bit := io.input_bit_array(x)
+      io.output_bit := ~bit
     }
 }
