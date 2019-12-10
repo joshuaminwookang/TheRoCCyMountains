@@ -10,7 +10,21 @@
 #include <sys/mman.h>
 #endif
 
+/*
+ * Initializes / resets Bloom filter hardware accelerator 
+ */
+static inline unsigned long hw_initBloom()
+{
+    unsigned long rd;
+	ROCC_INSTRUCTION(2, rd, rs1, 0);
+	return rd ;
+}
 
+/*
+ * Maps (already hashed) word to Bloom filter
+ * @ params: hash value of input string to be mapped
+ * @ returns: hash value of input string
+ */
 static inline unsigned long hw_mapToBloom(int rs1)
 {
     unsigned long rd;
@@ -18,9 +32,21 @@ static inline unsigned long hw_mapToBloom(int rs1)
 	return rd;
 }
 
+/*
+ * Tests if word is in Bloom filter
+ * @ params: hash value of string to be tested against BF
+ * @ returns: current miss count
+ */
+static inline unsigned long hw_mapToBloom(int rs1)
+{
+    unsigned long rd;
+	ROCC_INSTRUCTION_DS(2, rd, rs1, 2);
+	return rd;
+}
 
-// unsigned long data = 0x3421L;
-
+/*
+ * Test script 
+ */
 int main(void)
 {
 	unsigned long result1, result2, sum;
