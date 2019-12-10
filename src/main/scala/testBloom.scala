@@ -27,7 +27,9 @@ class TestBloomModule(val M: Int, val K: Int) extends Module {
     val y  = RegInit(0.U(64.W))
     val i  = RegInit(0.U(64.W))
     val bit = RegInit(1.U(1.W))
-    val done = (i === K.asUInt(64.W)) || (bit === 0.U(1.W))
+    val done = RegInit(Bool(false))
+    
+    done := (i === K.asUInt(64.W)) || (bit === 0.U(1.W))
 
     io.output_busy := !done
 
@@ -39,7 +41,6 @@ class TestBloomModule(val M: Int, val K: Int) extends Module {
           y := io.input_value >> 4
           bit := RegInit(1.U(1.W))
           io.output_bit := 0.U(1.W)
-          done := (i === K.asUInt(64.W)) || (bit === 0.U(1.W))
           // get into hashing state
           state_reg := s_hash
         }
@@ -50,7 +51,6 @@ class TestBloomModule(val M: Int, val K: Int) extends Module {
         y := (y + i) % K.asUInt(64.W)
         bit := io.input_bit_array(x)
         io.output_bit := ~bit
-        done := (i === K.asUInt(64.W)) || (bit === 0.U(1.W))
         when (done) {
           state_reg := s_resp
         }
