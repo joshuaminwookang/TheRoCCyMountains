@@ -33,6 +33,6 @@ class TestBloomModule(val M: Int, val K: Int) extends Module {
       x := Mux(~done, (x + y) % K.asUInt(64.W), x)  
       y := Mux(~done, (y + i) % K.asUInt(64.W), y)
       found := io.input_bit_array(x) 
-      io.output_boolean := found % 2
+      io.output_boolean := found + 1.U(1.W)
     }
 }
