@@ -38,23 +38,27 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   val mapModule = Module(new MapBloomModule(outer.m,outer.k))
   val testModule = Module(new TestBloomModule(outer.m,outer.k)) 
 
+  val map_counter = RegInit(0.U(64.W))
+  val test_counter = RegInit(0.U(64.W))
+
   when (cmd.fire()) {
     when (doInit) {
       bloom_bit_array := Reg(init = Vec.fill(outer.m)(0.U(1.W)))
       miss_counter := RegInit(0.U(64.W))
+      
     }
     when (doMap) {
       mapModule.io.input_value := hashed_string
       bloom_bit_array := mapModule.io.output_hashBits 
-      printf("I'm mapping !!!! %d\n", hashed_string)
+      map_counter := map_counter+1.U(64.W)
     }
     when (doTest) {
       testModule.io.input_value := hashed_string
       testModule.io.input_bit_array := bloom_bit_array
       //miss_counter := Mux(testModule.io.output_boolean, miss_counter, miss_counter+1.U(64.W))
       // miss_counter := miss_counter+1.U(64.W))
+      test_counter := test_counter+1.U(64.W)
     }
-    miss_counter := miss_counter+1.U(64.W)
   }
 
   // PROCESSOR RESPONSE INTERFACE
@@ -68,7 +72,8 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
     // Valid response if valid command, need a response, and no stalls
   io.resp.bits.rd := cmd.bits.inst.rd
     // Write to specified destination register address
-  io.resp.bits.data := miss_counter
+  //io.resp.bits.data := miss_counter
+  io.resp.bits.data := Mux(doMap, map_counter, test_counter)
     // Send out 
   io.busy := cmd.valid || busy.reduce(_||_)
     // Be busy when have pending memory requests or committed possibility of pending requests
