@@ -37,5 +37,5 @@ class MapBloomModule(val M: Int, val K: Int) extends Module {
       io.output_hashIndex := x
     }
 
-    io.output_busy <> done
+    io.output_busy := !done
 }

@@ -40,5 +40,5 @@ class TestBloomModule(val M: Int, val K: Int) extends Module {
       io.output_bit := ~bit
     }
 
-    io.output_busy <> done
+    io.output_busy := !done
 }
