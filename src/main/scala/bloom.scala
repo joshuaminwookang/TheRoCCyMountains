@@ -77,7 +77,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   io.resp.bits.rd := cmd.bits.inst.rd
     // Write to specified destination register address
   //io.resp.bits.data := miss_counter
-  io.resp.bits.data := hashed_string
+  io.resp.bits.data := miss_counter
     // Send out 
   // io.busy := cmd.valid || busy
   io.busy := busy
