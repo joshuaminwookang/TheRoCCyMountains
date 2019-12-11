@@ -17,7 +17,7 @@ class TestBloomModule extends Module {
     val input_value = Input(UInt(64.W))
     val input_bit_array = Input(Reg(Vec(20000,UInt(1.W))))
     // val input_reset = Input(Bool())
-    val output_found = Output(Bool())
+    val output_found = Output(UInt(1.W))
     // val output_busy = Output(Bool())
   }
     // states of this module 
@@ -43,11 +43,17 @@ class TestBloomModule extends Module {
     val x5  = RegInit(0.U(64.W))
     val y5  = RegInit(0.U(64.W))
 
-    val found1 = RegInit(Bool(true))
-    val found2 = RegInit(Bool(true))
-    val found3 = RegInit(Bool(true))
-    val found4 = RegInit(Bool(true))
-    val found5 = RegInit(Bool(true))
+    // val found1 = RegInit(Bool(true))
+    // val found2 = RegInit(Bool(true))
+    // val found3 = RegInit(Bool(true))
+    // val found4 = RegInit(Bool(true))
+    // val found5 = RegInit(Bool(true))
+
+    val found1 = RegInit(1.U(1.W))
+    val found2 = RegInit(1.U(1.W))
+    val found3 = RegInit(1.U(1.W))
+    val found4 = RegInit(1.U(1.W))
+    val found5 = RegInit(1.U(1.W))
 
     // Hash computation
     x0 := io.input_value
@@ -68,13 +74,19 @@ class TestBloomModule extends Module {
     x5 := (x4 + y4) % 20000.U(64.W)
     y5 := (y4 + 4.U(64.W)) % 20000.U(64.W)
 
-    found1 := io.input_bit_array(x1) === 1.U(1.W)
-    found2 := io.input_bit_array(x2) === 1.U(1.W)
-    found3 := io.input_bit_array(x2) === 1.U(1.W)
-    found4 := io.input_bit_array(x2) === 1.U(1.W)
-    found5 := io.input_bit_array(x2) === 1.U(1.W)
+    // found1 := io.input_bit_array(x1) === 1.U(1.W)
+    // found2 := io.input_bit_array(x2) === 1.U(1.W)
+    // found3 := io.input_bit_array(x2) === 1.U(1.W)
+    // found4 := io.input_bit_array(x2) === 1.U(1.W)
+    // found5 := io.input_bit_array(x2) === 1.U(1.W)
+    
+    found1 := io.input_bit_array(x1) 
+    found2 := io.input_bit_array(x2) 
+    found3 := io.input_bit_array(x2) 
+    found4 := io.input_bit_array(x2) 
+    found5 := io.input_bit_array(x2) 
 
-    io.output_found := found1 && found2 && found3 && found4 && found5
+    io.output_found := found1 & found2 & found3 & found4 & found5
 
     // BETTER WAY WITH PARAMETERIZABLE HASH UNITS 
     // But not working rn

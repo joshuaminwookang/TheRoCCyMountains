@@ -58,7 +58,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
       testModule.io.input_value := hashed_string
       testModule.io.input_bit_array <> bloom_bit_array
       // testModule.io.input_reset := true.B
-      miss_counter := Mux(testModule.io.output_found, miss_counter, miss_counter+1.U(64.W))
+      miss_counter :=  miss_counter, miss_counter + testModule.io.output_found
       // miss_counter := miss_counter+1.U(64.W))
     } 
   } 
@@ -77,7 +77,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   io.resp.bits.rd := cmd.bits.inst.rd
     // Write to specified destination register address
   //io.resp.bits.data := miss_counter
-  io.resp.bits.data := Mux(doMap, map_counter, miss_counter)
+  io.resp.bits.data := hashed_string
     // Send out 
   // io.busy := cmd.valid || busy
   io.busy := busy
