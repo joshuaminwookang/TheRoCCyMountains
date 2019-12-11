@@ -33,7 +33,9 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   val doMap = funct === UInt(1)
   val doTest = funct === UInt(2)
 
-  val testMatch = RegInit(Bool(true))
+  // constant value registers
+  val bloom_param_m = RegInit(20000.U(64.W))
+
   // val mapModule = Module(new MapBloomModule(outer.m,outer.k))
   // val testModule = Module(new TestBloomModule(outer.m,outer.k)) 
   // val mapModule = Module(new MapBloomModule)
@@ -43,20 +45,20 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   val x0  = hashed_string
   val y0  = hashed_string >> 4.U(64.W)
 
-  val x1  = (x0 + y0) % 20000.U(64.W)
-  val y1  = (y0) % 20000.U(64.W)
+  val x1  = (x0 + y0) % bloom_param_m 
+  val y1  = (y0) % bloom_param_m 
 
-  val x2  = (x1 + y1) % 20000.U(64.W)
-  val y2  = (y1 + 1.U(64.W)) % 20000.U(64.W)
+  val x2  = (x1 + y1) % bloom_param_m 
+  val y2  = (y1 + 1.U(64.W)) % bloom_param_m 
 
-  val x3  = (x2 + y2) % 20000.U(64.W)
-  val y3  = (y2 + 2.U(64.W)) % 20000.U(64.W)
+  val x3  = (x2 + y2) % bloom_param_m 
+  val y3  = (y2 + 2.U(64.W)) % bloom_param_m 
 
-  val x4  = (x3 + y3) % 20000.U(64.W)
-  val y4  = (y3 + 3.U(64.W)) % 20000.U(64.W)
+  val x4  = (x3 + y3) % bloom_param_m 
+  val y4  = (y3 + 3.U(64.W)) % bloom_param_m 
 
-  val x5  = (x4 + y4) % 20000.U(64.W)
-  val y5  = (y4 + 4.U(64.W)) % 20000.U(64.W)
+  val x5  = (x4 + y4) % bloom_param_m 
+  val y5  = (y4 + 4.U(64.W)) % bloom_param_m 
 
   val found1 = bloom_bit_array(x1)
   val found2 = bloom_bit_array(x2)
