@@ -39,23 +39,24 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   // val mapModule = Module(new MapBloomModule)
   // val testModule = Module(new TestBloomModule)
 
+  // Hash computation
   val x0  = hashed_string
   val y0  = hashed_string >> 4.U(64.W)
 
-  val x1  = RegInit(0.U(64.W))
-  val y1  = RegInit(0.U(64.W))
+  val x1  = (x0 + y0) % 20000.U(64.W)
+  val y1  = (y0) % 20000.U(64.W)
 
-  val x2  = RegInit(0.U(64.W))
-  val y2  = RegInit(0.U(64.W))
+  val x2  = (x1 + y1) % 20000.U(64.W)
+  val y2  = (y1 + 1.U(64.W)) % 20000.U(64.W)
 
-  val x3  = RegInit(0.U(64.W))
-  val y3  = RegInit(0.U(64.W))
+  val x3  = (x2 + y2) % 20000.U(64.W)
+  val y3  = (y2 + 2.U(64.W)) % 20000.U(64.W)
 
-  val x4  = RegInit(0.U(64.W))
-  val y4  = RegInit(0.U(64.W))
+  val x4  = (x3 + y3) % 20000.U(64.W)
+  val y4  = (y3 + 3.U(64.W)) % 20000.U(64.W)
 
-  val x5  = RegInit(0.U(64.W))
-  val y5  = RegInit(0.U(64.W))
+  val x5  = (x4 + y4) % 20000.U(64.W)
+  val y5  = (y4 + 4.U(64.W)) % 20000.U(64.W)
 
   val found1 = bloom_bit_array(x1)
   val found2 = bloom_bit_array(x2)
@@ -63,26 +64,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   val found4 = bloom_bit_array(x4)
   val found5 = bloom_bit_array(x5)
 
-  // Hash computation
-  x0 := io.input_value
-  y0 := io.input_value >> 4.U(64.W)
-
-  x1 := (x0 + y0) % 20000.U(64.W)
-  y1 := (y0 + 0.U(64.W)) % 20000.U(64.W)
-
-  x2 := (x1 + y1) % 20000.U(64.W)
-  y2 := (y1 + 1.U(64.W)) % 20000.U(64.W)
-
-  x3 := (x2 + y2) % 20000.U(64.W)
-  y3 := (y2 + 2.U(64.W)) % 20000.U(64.W)
-
-  x4 := (x3 + y3) % 20000.U(64.W)
-  y4 := (y3 + 3.U(64.W)) % 20000.U(64.W)
-
-  x5 := (x4 + y4) % 20000.U(64.W)
-  y5 := (y4 + 4.U(64.W)) % 20000.U(64.W)
-
-
+  // Custom function behaviors
   when (cmd.fire()) {
     when (doInit) {
       bloom_bit_array := Reg(init = Vec.fill(20000)(0.U(1.W)))
