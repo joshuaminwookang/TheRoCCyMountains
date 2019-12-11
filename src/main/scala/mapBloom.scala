@@ -25,8 +25,8 @@ class MapBloomModule extends Module {
     // val state_reg = RegInit(s_idle)
 
      // Local variables
-    val x0  = RegInit(0.U(64.W))
-    val y0  = RegInit(0.U(64.W))
+    // val x0  = RegInit(0.U(64.W))
+    // val y0  = RegInit(0.U(64.W))
 
     // val x1  = RegInit(0.U(64.W))
     // val y1  = RegInit(0.U(64.W))
@@ -42,6 +42,9 @@ class MapBloomModule extends Module {
 
     // val x5  = RegInit(0.U(64.W))
     // val y5  = RegInit(0.U(64.W))
+
+    val x0  = Wire(UInt())
+    val y0  = Wire(UInt())
 
     val x1  = Wire(UInt())
     val y1  = Wire(UInt())
