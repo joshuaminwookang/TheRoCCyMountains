@@ -77,29 +77,54 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
 
   // val x5  = (x4 + y4) % bloom_param_m 
   // val y5  = (y4 + 4.U(64.W)) % bloom_param_m 
+
+  // x0 := hashed_string
+  // y0 := hashed_string >> 4.U(64.W)
+
+  // x1 := (x0 + y0) % 20000.U(64.W)
+  // y1 := (y0 + 0.U(64.W)) % 20000.U(64.W)
+
+  // x2 := (x1 + y1) % 20000.U(64.W)
+  // y2 := (y1 + 1.U(64.W)) % 20000.U(64.W)
+
+  // x3 := (x2 + y2) % 20000.U(64.W)
+  // y3 := (y2 + 2.U(64.W)) % 20000.U(64.W)
+
+  // x4 := (x3 + y3) % 20000.U(64.W)
+  // y4 := (y3 + 3.U(64.W)) % 20000.U(64.W)
+
+  // x5 := (x4 + y4) % 20000.U(64.W)
+  // y5 := (y4 + 4.U(64.W)) % 20000.U(64.W)
+
   x0 := hashed_string
-  y0 := hashed_string >> 4.U(64.W)
+  y0 := hashed_string >> 4
 
-  x1 := (x0 + y0) % 20000.U(64.W)
-  y1 := (y0 + 0.U(64.W)) % 20000.U(64.W)
+  x1 := (x0 + y0) % 20000
+  y1 := (y0 + 0) % 20000
 
-  x2 := (x1 + y1) % 20000.U(64.W)
-  y2 := (y1 + 1.U(64.W)) % 20000.U(64.W)
+  x2 := (x1 + y1) % 20000
+  y2 := (y1 + 1) % 20000
 
-  x3 := (x2 + y2) % 20000.U(64.W)
-  y3 := (y2 + 2.U(64.W)) % 20000.U(64.W)
+  x3 := (x2 + y2) % 20000
+  y3 := (y2 + 2) % 20000
 
-  x4 := (x3 + y3) % 20000.U(64.W)
-  y4 := (y3 + 3.U(64.W)) % 20000.U(64.W)
+  x4 := (x3 + y3) % 20000
+  y4 := (y3 + 3) % 20000
 
-  x5 := (x4 + y4) % 20000.U(64.W)
-  y5 := (y4 + 4.U(64.W)) % 20000.U(64.W)
+  x5 := (x4 + y4) % 20000
+  y5 := (y4 + 4) % 20000
 
-  val found1 = bloom_bit_array(x1)
-  val found2 = bloom_bit_array(x2)
-  val found3 = bloom_bit_array(x3)
-  val found4 = bloom_bit_array(x4)
-  val found5 = bloom_bit_array(x5)
+  val found1 = RegInit(1.U(1.W))
+  val found2 = RegInit(1.U(1.W))
+  val found3 = RegInit(1.U(1.W))
+  val found4 = RegInit(1.U(1.W))
+  val found5 = RegInit(1.U(1.W))
+
+  found1 := bloom_bit_array(x1)
+  found2 := bloom_bit_array(x2)
+  found3 := bloom_bit_array(x3)
+  found4 := bloom_bit_array(x4)
+  found5 := bloom_bit_array(x5)
 
   // Custom function behaviors
   when (cmd.fire()) {
