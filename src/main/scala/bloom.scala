@@ -22,7 +22,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   // accelerator memory 
   val bloom_bit_array = Reg(init = Vec.fill(20000)(0.U(1.W)))
   val miss_counter = RegInit(0.U(64.W))
-  // val busy = RegInit(Bool(false))
+  val busy = RegInit(Bool(false))
 
   val cmd = Queue(io.cmd)
   val funct = cmd.bits.inst.funct
@@ -156,8 +156,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   //io.resp.bits.data := miss_counter
   io.resp.bits.data := miss_counter
     // Send out 
-  // io.busy := cmd.valid || busy
-  io.busy := busy
+  io.busy := cmd.valid || busy
     // Be busy when have pending memory requests or committed possibility of pending requests
   io.interrupt := Bool(false)
     // Set this true to trigger an interrupt on the processor (not the case for our current simplified implementation)
