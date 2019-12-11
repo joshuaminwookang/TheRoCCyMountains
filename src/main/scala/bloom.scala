@@ -77,8 +77,8 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
 
   // val x5  = (x4 + y4) % bloom_param_m 
   // val y5  = (y4 + 4.U(64.W)) % bloom_param_m 
-  x0 := io.input_value
-  y0 := io.input_value >> 4.U(64.W)
+  x0 := hashed_string
+  y0 := hashed_string >> 4.U(64.W)
 
   x1 := (x0 + y0) % 20000.U(64.W)
   y1 := (y0 + 0.U(64.W)) % 20000.U(64.W)
