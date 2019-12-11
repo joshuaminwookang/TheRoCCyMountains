@@ -18,7 +18,7 @@ class MapBloomModule extends Module {
     // val input_reset = Input(Bool())
     val output_hashBits = Output(Reg(Vec(20000,UInt(1.W))))
     val output_hashIndex = Output(UInt(64.W))
-    // val output_busy = Output(Bool())
+    val output_busy = Output(Bool())
   }
     // states of this module 
     // val s_idle :: s_hash :: s_resp :: Nil = Enum(Bits(), 3)
@@ -89,6 +89,7 @@ class MapBloomModule extends Module {
     io.output_hashBits(x4) := 1.U(1.W)
     io.output_hashBits(x5) := 1.U(1.W)
 
+    io.output_busy := (io.output_hashBits(x1) =/= 1.U(1.W)) || (io.output_hashBits(x2) =/= 1.U(1.W)) || (io.output_hashBits(x3) =/= 1.U(1.W)) || (io.output_hashBits(x4) =/= 1.U(1.W)) || (io.output_hashBits(x5) =/= 1.U(1.W))
     io.output_hashIndex := x5
 
     // when(io.input_reset){

@@ -18,30 +18,30 @@ class TestBloomModule extends Module {
     val input_bit_array = Input(Reg(Vec(20000,UInt(1.W))))
     // val input_reset = Input(Bool())
     val output_found = Output(UInt(1.W))
-    // val output_busy = Output(Bool())
+    val output_busy = Output(Bool())
   }
     // states of this module 
     // val s_idle :: s_hash :: s_resp :: Nil = Enum(Bits(), 3)
     // val state_reg = RegInit(s_idle)
 
      // Local variables
-    val x0  = RegInit(0.U(64.W))
-    val y0  = RegInit(0.U(64.W))
+    val x0  = Wire(UInt())
+    val y0  = Wire(UInt())
 
-    val x1  = RegInit(0.U(64.W))
-    val y1  = RegInit(0.U(64.W))
+    val x1  = Wire(UInt())
+    val y1  = Wire(UInt())
 
-    val x2  = RegInit(0.U(64.W))
-    val y2  = RegInit(0.U(64.W))
+    val x2  = Wire(UInt())
+    val y2  = Wire(UInt())
 
-    val x3  = RegInit(0.U(64.W))
-    val y3  = RegInit(0.U(64.W))
+    val x3  = Wire(UInt())
+    val y3  = Wire(UInt())
 
-    val x4  = RegInit(0.U(64.W))
-    val y4  = RegInit(0.U(64.W))
+    val x4  = Wire(UInt())
+    val y4  = Wire(UInt())
 
-    val x5  = RegInit(0.U(64.W))
-    val y5  = RegInit(0.U(64.W))
+    val x5  = Wire(UInt())
+    val y5  = Wire(UInt())
 
     // val found1 = RegInit(Bool(true))
     // val found2 = RegInit(Bool(true))
@@ -49,11 +49,11 @@ class TestBloomModule extends Module {
     // val found4 = RegInit(Bool(true))
     // val found5 = RegInit(Bool(true))
 
-    val found1 = RegInit(1.U(1.W))
-    val found2 = RegInit(1.U(1.W))
-    val found3 = RegInit(1.U(1.W))
-    val found4 = RegInit(1.U(1.W))
-    val found5 = RegInit(1.U(1.W))
+    val found1 = Wire(UInt())
+    val found2 = Wire(UInt())
+    val found3 = Wire(UInt())
+    val found4 = Wire(UInt())
+    val found5 = Wire(UInt())
 
     // Hash computation
     x0 := io.input_value
@@ -84,7 +84,9 @@ class TestBloomModule extends Module {
     found2 := io.input_bit_array(x2) 
     found3 := io.input_bit_array(x2) 
     found4 := io.input_bit_array(x2) 
-    found5 := io.input_bit_array(x2) 
+    found5 := io.input_bit_array(x2)
+
+    io.output_busy :=  (found1 =/= io.input_bit_array(x1)) || (found2 =/= io.input_bit_array(x2)) || (found3 =/= io.input_bit_array(x3)) || (found3 =/= io.input_bit_array(x3))|| (found3 =/= io.input_bit_array(x3))
 
     io.output_found := found1 & found2 & found3 & found4 & found5
 

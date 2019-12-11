@@ -41,6 +41,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   val mapModule = Module(new MapBloomModule)
   val testModule = Module(new TestBloomModule)
   val debug = RegInit(0.U(64.W))
+
   // Hash computation
   // val x0  = RegInit(0.U(64.W))
   // val y0  = RegInit(0.U(64.W))
@@ -145,7 +146,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
     } 
   } 
 
-  // busy := mapModule.io.output_busy || testModule.io.output_busy
+  busy := mapModule.io.output_busy || testModule.io.output_busy
 
   // PROCESSOR RESPONSE INTERFACE
   // Control for communicate accelerator response back to host processor
