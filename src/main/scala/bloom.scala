@@ -36,8 +36,8 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   val testMatch = RegInit(Bool(true))
   // val mapModule = Module(new MapBloomModule(outer.m,outer.k))
   // val testModule = Module(new TestBloomModule(outer.m,outer.k)) 
-  val mapModule = Module(new MapBloomModule)
-  val testModule = Module(new TestBloomModule)
+  // val mapModule = Module(new MapBloomModule)
+  // val testModule = Module(new TestBloomModule)
 
   val x0  = hashed_string
   val y0  = hashed_string >> 4.U(64.W)
