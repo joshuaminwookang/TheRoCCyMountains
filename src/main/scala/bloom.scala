@@ -99,20 +99,20 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   x0 := hashed_string
   y0 := hashed_string >> 4
 
-  x1 := (x0 + y0) % 20000
-  y1 := (y0 + 0) % 20000
+  x1 := (x0 + y0) % 20000.U(64.W)
+  y1 := (y0 + 0.U(64.W)) % 20000.U(64.W)
 
-  x2 := (x1 + y1) % 20000
-  y2 := (y1 + 1) % 20000
+  x2 := (x1 + y1) % 20000.U(64.W)
+  y2 := (y1 + 1.U(64.W)) % 20000.U(64.W)
 
-  x3 := (x2 + y2) % 20000
-  y3 := (y2 + 2) % 20000
+  x3 := (x2 + y2) % 20000.U(64.W)
+  y3 := (y2 + 2.U(64.W)) % 20000.U(64.W)
 
-  x4 := (x3 + y3) % 20000
-  y4 := (y3 + 3) % 20000
+  x4 := (x3 + y3) % 20000.U(64.W)
+  y4 := (y3 + 3.U(64.W)) % 20000.U(64.W)
 
-  x5 := (x4 + y4) % 20000
-  y5 := (y4 + 4) % 20000
+  x5 := (x4 + y4) % 20000.U(64.W)
+  y5 := (y4 + 4.U(64.W)) % 20000.U(64.W)
 
   val found1 = RegInit(1.U(1.W))
   val found2 = RegInit(1.U(1.W))
