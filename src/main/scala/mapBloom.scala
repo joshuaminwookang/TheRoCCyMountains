@@ -48,20 +48,20 @@ class MapBloomModule(val M: Int, val K: Int) extends Module {
     x0 := io.input_value
     y0 := io.input_value >> 4.U(64.W)
 
-    x1 := (x0 + y0) % K.(64.W)
-    y1 := (y0 + 0.U(64.W)) % K.(64.W)
+    x1 := (x0 + y0) % K.asUInt(64.W)
+    y1 := (y0 + 0.U(64.W)) % K.asUInt(64.W)
 
-    x2 := (x1 + y1) % K.(64.W)
-    y2 := (y1 + 1.U(64.W)) % K.(64.W)
+    x2 := (x1 + y1) % K.asUInt(64.W)
+    y2 := (y1 + 1.U(64.W)) % K.asUInt(64.W)
 
-    x3 := (x2 + y2) % K.(64.W)
-    y3 := (y2 + 2.U(64.W)) % K.(64.W)
+    x3 := (x2 + y2) % K.asUInt(64.W)
+    y3 := (y2 + 2.U(64.W)) % K.asUInt(64.W)
 
-    x4 := (x3 + y3) % K.(64.W)
-    y4 := (y3 + 3.U(64.W)) % K.(64.W)
+    x4 := (x3 + y3) % K.asUInt(64.W)
+    y4 := (y3 + 3.U(64.W)) % K.asUInt(64.W)
 
-    x5 := (x4 + y4) % K.(64.W)
-    y5 := (y4 + 4.U(64.W)) % K.(64.W)
+    x5 := (x4 + y4) % K.asUInt(64.W)
+    y5 := (y4 + 4.U(64.W)) % K.asUInt(64.W)
 
     io.output_hashBits(x1) := 1.U(1.W)
     io.output_hashBits(x2) := 1.U(1.W)
