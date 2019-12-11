@@ -78,24 +78,6 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   // val x5  = (x4 + y4) % bloom_param_m 
   // val y5  = (y4 + 4.U(64.W)) % bloom_param_m 
 
-  // x0 := hashed_string
-  // y0 := hashed_string >> 4.U(64.W)
-
-  // x1 := (x0 + y0) % 20000.U(64.W)
-  // y1 := (y0 + 0.U(64.W)) % 20000.U(64.W)
-
-  // x2 := (x1 + y1) % 20000.U(64.W)
-  // y2 := (y1 + 1.U(64.W)) % 20000.U(64.W)
-
-  // x3 := (x2 + y2) % 20000.U(64.W)
-  // y3 := (y2 + 2.U(64.W)) % 20000.U(64.W)
-
-  // x4 := (x3 + y3) % 20000.U(64.W)
-  // y4 := (y3 + 3.U(64.W)) % 20000.U(64.W)
-
-  // x5 := (x4 + y4) % 20000.U(64.W)
-  // y5 := (y4 + 4.U(64.W)) % 20000.U(64.W)
-
   x0 := hashed_string
   y0 := hashed_string >> 4
 
@@ -133,11 +115,11 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
       miss_counter := RegInit(0.U(64.W))
     }
     when (doMap) {
-      bloom_bit_array (x1) := 1.U(1.W)
-      bloom_bit_array (x2) := 1.U(1.W)
-      bloom_bit_array (x3) := 1.U(1.W)
-      bloom_bit_array (x4) := 1.U(1.W)
-      bloom_bit_array (x5) := 1.U(1.W)
+      bloom_bit_array(x1) := 1.U(1.W)
+      bloom_bit_array(x2) := 1.U(1.W)
+      bloom_bit_array(x3) := 1.U(1.W)
+      bloom_bit_array(x4) := 1.U(1.W)
+      bloom_bit_array(x5) := 1.U(1.W)
     } 
     when (doTest) {
       miss_counter := miss_counter + (found1 & found2 & found3 & found4 & found5)
