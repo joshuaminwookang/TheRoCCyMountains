@@ -40,7 +40,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   // val testModule = Module(new TestBloomModule(outer.m,outer.k)) 
   val mapModule = Module(new MapBloomModule)
   val testModule = Module(new TestBloomModule)
-
+  val debug = RegInit(0.U(64.W))
   // Hash computation
   // val x0  = RegInit(0.U(64.W))
   // val y0  = RegInit(0.U(64.W))
@@ -135,7 +135,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
       mapModule.io.input_value := hashed_string
       // mapModule.io.input_reset := true.B
       bloom_bit_array <> mapModule.io.output_hashBits 
-      map_counter := mapModule.io.output_hashIndex
+      debug := mapModule.io.output_hashIndex
     } 
     when (doTest) {
       testModule.io.input_value := hashed_string
@@ -159,7 +159,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   io.resp.bits.rd := cmd.bits.inst.rd
     // Write to specified destination register address
   //io.resp.bits.data := miss_counter
-  io.resp.bits.data := miss_counter
+  io.resp.bits.data := Mux(doMap, debug, miss_counter)
     // Send out 
   io.busy := cmd.valid || busy
     // Be busy when have pending memory requests or committed possibility of pending requests
