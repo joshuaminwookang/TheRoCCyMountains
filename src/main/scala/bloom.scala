@@ -26,7 +26,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
 
   val cmd = Queue(io.cmd)
   val funct = cmd.bits.inst.funct
-  val hashed_string = cmd.bits.rs1.asUInt(64.W)
+  val hashed_string = cmd.bits.rs1.asUInt
 
   // decode RoCC custom function
   val doInit = funct === UInt(0)
