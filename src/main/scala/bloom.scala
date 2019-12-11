@@ -59,12 +59,9 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
       miss_counter := Mux(testModule.io.output_bit === 1.U(1.W), miss_counter, miss_counter+1.U(64.W))
       // miss_counter := miss_counter+1.U(64.W))
     } 
-  } otherwise {
-    mapModule.io.input_reset := false.B
-    testModule.io.input_reset := false.B
-  }
+  } 
 
-  busy := mapModule.io.output_busy || testModule.io.output_busy
+  // busy := mapModule.io.output_busy || testModule.io.output_busy
 
   // PROCESSOR RESPONSE INTERFACE
   // Control for communicate accelerator response back to host processor

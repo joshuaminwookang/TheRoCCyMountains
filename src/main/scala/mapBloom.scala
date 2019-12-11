@@ -13,22 +13,65 @@ class MapBloomModule(val M: Int, val K: Int) extends Module {
   //val W = 64
   val io = new Bundle { 
     val input_value = Input(UInt(64.W))
-    val input_reset = Input(Bool())
+    // val input_reset = Input(Bool())
     val output_hashBits = Output(Reg(Vec(M,UInt(1.W))))
     val output_hashIndex = Output(UInt(64.W))
-    val output_busy = Output(Bool())
+    // val output_busy = Output(Bool())
   }
     // states of this module 
-    val s_idle :: s_hash :: s_resp :: Nil = Enum(Bits(), 3)
-    val state_reg = RegInit(s_idle)
+    // val s_idle :: s_hash :: s_resp :: Nil = Enum(Bits(), 3)
+    // val state_reg = RegInit(s_idle)
+    val s_idle :: s_hash :: Nil = Enum(Bits(), 2)
 
      // Local variables
-    val x  = RegInit(0.U(64.W))
-    val y  = RegInit(0.U(64.W))
-    val i  = RegInit(0.U(64.W))
-    val done = (i === K.asUInt(64.W))
+    val x0  = RegInit(0.U(64.W))
+    val y0  = RegInit(0.U(64.W))
+
+    val x1  = RegInit(0.U(64.W))
+    val y1  = RegInit(0.U(64.W))
+
+    val x2  = RegInit(0.U(64.W))
+    val y2  = RegInit(0.U(64.W))
+
+    val x3  = RegInit(0.U(64.W))
+    val y3  = RegInit(0.U(64.W))
+
+    val x4  = RegInit(0.U(64.W))
+    val y4  = RegInit(0.U(64.W))
+
+    val x5  = RegInit(0.U(64.W))
+    val y5  = RegInit(0.U(64.W))
+
+
+    // val done = (i === K.asUInt(64.W))
   
     // Hash computation
+    x0 := io.input_value
+    y0 := io.input_value >> 4.U.(64.W)
+
+    x1 := (x0 + y0) % K.(64.W)
+    y1 := (y0 + 0.(64.W)) % K.(64.W)
+
+    x2 := (x1 + y1) % K.(64.W)
+    y2 := (y1 + 1.(64.W)) % K.(64.W)
+
+    x3 := (x2 + y2) % K.(64.W)
+    y3 := (y2 + 2.(64.W)) % K.(64.W)
+
+    x4 := (x3 + y3) % K.(64.W)
+    y4 := (y3 + 3.(64.W)) % K.(64.W)
+
+    x5 := (x4 + y4) % K.(64.W)
+    y5 := (y4 + 4.(64.W)) % K.(64.W)
+
+    io.output_hashBits(x1) := 1.U(1.W)
+    io.output_hashBits(x2) := 1.U(1.W)
+    io.output_hashBits(x3) := 1.U(1.W)
+    io.output_hashBits(x4) := 1.U(1.W)
+    io.output_hashBits(x5) := 1.U(1.W)
+
+    io.output_hashIndex := x5
+
     // when(io.input_reset){
     //   i := RegInit(0.U(64.W))
     //   x := io.input_value
@@ -41,39 +84,41 @@ class MapBloomModule(val M: Int, val K: Int) extends Module {
     //   io.output_hashIndex := x
     // }
 
-    switch(state_reg) {
-      is (s_idle) {
-        when(io.input_reset){
-          i := RegInit(0.U(64.W))
-          x := io.input_value
-          y := io.input_value >> 4.U(64.W)
-          io.output_hashBits(x) := 1.U(1.W)
-          io.output_hashIndex := x
-          // get into hashing state
-          state_reg := s_hash
-          io.output_busy := true.B
-        } otherwise {
-          io.output_busy := false.B
-        }
-      }
-      is (s_hash) {
-        i := i + 1.U(64.W)
-        x := (x + y) % K.asUInt(64.W)  
-        y := (y + i) % K.asUInt(64.W)
-        io.output_hashBits(x) := 1.U(1.W)
-        io.output_hashIndex := x
-        io.output_busy := true.B
-        // are we done hashing?
-        when (done) {
-          state_reg := s_resp
-        }
-      }
-      // respond to main module 
-      is (s_resp) {
-        io.output_hashBits(x) := 1.U(1.W)
-        io.output_hashIndex := i
-        state_reg := s_idle
-        io.output_busy := false.B
-      }
-    }
+    // switch(state_reg) {
+    //   is (s_idle) {
+    //     when(io.input_reset){
+    //       i := RegInit(0.U(64.W))
+    //       x := io.input_value
+    //       y := io.input_value >> 4.U(64.W)
+    //       io.output_hashBits(x) := 1.U(1.W)
+    //       io.output_hashIndex := x
+    //       // get into hashing state
+    //       state_reg := s_hash
+    //       io.output_busy := true.B
+    //     } otherwise {
+    //       io.output_busy := false.B
+    //     }
+    //   }
+    //   is (s_hash) {
+    //     i := i + 1.U(64.W)
+    //     x := (x + y) % K.asUInt(64.W)  
+    //     y := (y + i) % K.asUInt(64.W)
+    //     io.output_hashBits(x) := 1.U(1.W)
+    //     io.output_hashIndex := x
+    //     io.output_busy := true.B
+    //     // are we done hashing?
+    //     when (done) {
+    //       state_reg := s_resp
+    //     }
+    //   }
+    //   // respond to main module 
+    //   is (s_resp) {
+    //     io.output_hashBits(x) := 1.U(1.W)
+    //     io.output_hashIndex := i
+    //     state_reg := s_idle
+    //     io.output_busy := false.B
+    //   }
+    // }
+
+
 }
