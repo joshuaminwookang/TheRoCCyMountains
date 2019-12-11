@@ -28,20 +28,35 @@ class MapBloomModule extends Module {
     val x0  = RegInit(0.U(64.W))
     val y0  = RegInit(0.U(64.W))
 
-    val x1  = RegInit(0.U(64.W))
-    val y1  = RegInit(0.U(64.W))
+    // val x1  = RegInit(0.U(64.W))
+    // val y1  = RegInit(0.U(64.W))
 
-    val x2  = RegInit(0.U(64.W))
-    val y2  = RegInit(0.U(64.W))
+    // val x2  = RegInit(0.U(64.W))
+    // val y2  = RegInit(0.U(64.W))
 
-    val x3  = RegInit(0.U(64.W))
-    val y3  = RegInit(0.U(64.W))
+    // val x3  = RegInit(0.U(64.W))
+    // val y3  = RegInit(0.U(64.W))
 
-    val x4  = RegInit(0.U(64.W))
-    val y4  = RegInit(0.U(64.W))
+    // val x4  = RegInit(0.U(64.W))
+    // val y4  = RegInit(0.U(64.W))
 
-    val x5  = RegInit(0.U(64.W))
-    val y5  = RegInit(0.U(64.W))
+    // val x5  = RegInit(0.U(64.W))
+    // val y5  = RegInit(0.U(64.W))
+
+    val x1  = Wire(UInt())
+    val y1  = Wire(UInt())
+
+    val x2  = Wire(UInt())
+    val y2  = Wire(UInt())
+
+    val x3  = Wire(UInt())
+    val y3  = Wire(UInt())
+
+    val x4  = Wire(UInt())
+    val y4  = Wire(UInt())
+
+    val x5  = Wire(UInt())
+    val y5  = Wire(UInt())
 
 
     // val done = (i === K.asUInt(64.W))
