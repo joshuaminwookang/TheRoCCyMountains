@@ -4,7 +4,7 @@ package bloom
 
 
 import Chisel._
-import chisel3.util._
+// import chisel3.util._
 
 import freechips.rocketchip.config._
 import freechips.rocketchip.subsystem._
@@ -144,7 +144,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
 
   // bloom_bit_array := mapModule.io.output_hashBits 
   // testModule.io.input_bit_array := bloom_bit_array
-  busy := mapModule.io.output_busy || testModule.io.output_busy
+  // busy := mapModule.io.output_busy || testModule.io.output_busy
 
   // PROCESSOR RESPONSE INTERFACE
   // Control for communicate accelerator response back to host processor
