@@ -147,6 +147,10 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
     } 
   } 
 
+  when (io.resp.firet()){
+    busy := Bool(false)
+  }
+
   bloom_bit_array := mapModule.io.output_hashBits 
   testModule.io.input_bit_array := bloom_bit_array
   busy := mapModule.io.output_busy || testModule.io.output_busy
@@ -154,11 +158,11 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   // PROCESSOR RESPONSE INTERFACE
   // Control for communicate accelerator response back to host processor
   val doResp = cmd.bits.inst.xd
-  val stallResp = doResp && !io.resp.ready && busy
+  val stallResp = doResp && !io.resp.ready 
 
   cmd.ready := !stallResp 
     // Command resolved if no stalls AND not issuing a load that will need a request
-  io.resp.valid := cmd.valid && doResp 
+  io.resp.valid := cmd.valid && doResp &&!busy
     // Valid response if valid command, need a response, and no stalls
   io.resp.bits.rd := cmd.bits.inst.rd
     // Write to specified destination register address
