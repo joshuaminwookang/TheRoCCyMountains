@@ -3,7 +3,7 @@
 package bloom
 
 import chisel3._
-import chisel3.util_
+import chisel3.util._
 
 import freechips.rocketchip.config._
 import freechips.rocketchip.subsystem._
