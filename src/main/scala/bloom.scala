@@ -1,7 +1,10 @@
-//see LICENSE for license
+// RoCC Bloom filter accelerator
+// (c) 2019 Josh Kang and Andrew Thai
+
+// Current version hard-codes the BF, m = 20,000 and k = 5
+// To-do: parameterize m and k; make accelerator more scalable
 
 package bloom
-
 
 import Chisel._
 // import chisel3.util._
@@ -34,9 +37,6 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   val doInit = funct === UInt(0)
   val doMap = funct === UInt(1)
   val doTest = funct === UInt(2)
-
-  // constant value registers
-  // val bloom_param_m = 20000.U(64.W)
 
   // val mapModule = Module(new MapBloomModule(outer.m,outer.k))
   // val testModule = Module(new TestBloomModule(outer.m,outer.k)) 
@@ -81,12 +81,6 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
 
   x5 := (x4 + y4) % 20000.U(64.W)
   y5 := (y4 + 4.U(64.W)) % 20000.U(64.W)
-
-  // val found1 = RegInit(1.U(1.W))
-  // val found2 = RegInit(1.U(1.W))
-  // val found3 = RegInit(1.U(1.W))
-  // val found4 = RegInit(1.U(1.W))
-  // val found5 = RegInit(1.U(1.W))
 
   val found1 = Wire(UInt())
   val found2 = Wire(UInt())
@@ -144,9 +138,6 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
     fresh := Bool(false)
   }
 
-  // bloom_bit_array := mapModule.io.output_hashBits 
-  // testModule.io.input_bit_array := bloom_bit_array
-  // busy := mapModule.io.output_busy || testModule.io.output_busy
 
   // PROCESSOR RESPONSE INTERFACE
   // Control for communicate accelerator response back to host processor
