@@ -135,12 +135,12 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
     when (doMap) {
       mapModule.io.input_value := hashed_string
       // mapModule.io.input_reset := true.B
-      // bloom_bit_array := mapModule.io.output_hashBits 
+      bloom_bit_array := mapModule.io.output_hashBits 
       debug := mapModule.io.output_hashIndex
     } 
     when (doTest) {
       testModule.io.input_value := hashed_string
-      // testModule.io.input_bit_array := bloom_bit_array
+      testModule.io.input_bit_array := bloom_bit_array
       // testModule.io.input_reset := true.B
       miss_counter := miss_counter + ~testModule.io.output_found
       debug := testModule.io.output_debug
