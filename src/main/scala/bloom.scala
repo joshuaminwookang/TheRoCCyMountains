@@ -43,6 +43,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   // val mapModule = Module(new MapBloomModule)
   // val testModule = Module(new TestBloomModule)
   // val debug = RegInit(0.U(64.W))
+  val fresh = RegInit(Bool(true))
 
   // Hash computation
   val x0  = Wire(UInt())
@@ -81,17 +82,17 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   x5 := (x4 + y4) % 20000.U(64.W)
   y5 := (y4 + 4.U(64.W)) % 20000.U(64.W)
 
-  // val found1 = RegInit(1.U(1.W))
-  // val found2 = RegInit(1.U(1.W))
-  // val found3 = RegInit(1.U(1.W))
-  // val found4 = RegInit(1.U(1.W))
-  // val found5 = RegInit(1.U(1.W))
+  val found1 = RegInit(1.U(1.W))
+  val found2 = RegInit(1.U(1.W))
+  val found3 = RegInit(1.U(1.W))
+  val found4 = RegInit(1.U(1.W))
+  val found5 = RegInit(1.U(1.W))
 
-  val found1 = Wire(UInt())
-  val found2 = Wire(UInt())
-  val found3 = Wire(UInt())
-  val found4 = Wire(UInt())
-  val found5 = Wire(UInt())
+  // val found1 = Wire(UInt())
+  // val found2 = Wire(UInt())
+  // val found3 = Wire(UInt())
+  // val found4 = Wire(UInt())
+  // val found5 = Wire(UInt())
 
   found1 := bloom_bit_array(x1)
   found2 := bloom_bit_array(x2)
@@ -104,6 +105,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
     when (doInit) {
       bloom_bit_array := Reg(init = Vec.fill(20000)(0.U(1.W)))
       miss_counter := RegInit(0.U(64.W))
+      fresh := Bool(true)
     }
     when (doMap) {
       bloom_bit_array(x1) := 1.U(1.W)
@@ -139,7 +141,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
 
 
   when (io.resp.fire()){
-    busy := Bool(false)
+    fresh := Bool(false)
   }
 
   // bloom_bit_array := mapModule.io.output_hashBits 
@@ -153,7 +155,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
 
   cmd.ready := !stallResp 
     // Command resolved if no stalls AND not issuing a load that will need a request
-  io.resp.valid := cmd.valid && doResp && (!busy)
+  io.resp.valid := cmd.valid && doResp && (!fresh)
     // Valid response if valid command, need a response, and no stalls
   io.resp.bits.rd := cmd.bits.inst.rd
     // Write to specified destination register address
