@@ -143,7 +143,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
       // testModule.io.input_bit_array := bloom_bit_array
       // testModule.io.input_reset := true.B
       miss_counter := miss_counter + ~testModule.io.output_found
-      debug := output_debug
+      debug := testModule.io.output_debug
     } 
   } 
 
