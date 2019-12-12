@@ -88,7 +88,7 @@ class TestBloomModule extends Module {
     found5 := io.input_bit_array(x2)
 
     io.output_busy :=  (found1 =/= io.input_bit_array(x1)) || (found2 =/= io.input_bit_array(x2)) || (found3 =/= io.input_bit_array(x3)) || (found3 =/= io.input_bit_array(x3))|| (found3 =/= io.input_bit_array(x3))
-    io.output_debug := x5*100000 + found1*10000+ found2*1000+found3*100+found4*10+found5
+    io.output_debug := x5*100000.U(64.W) + found1*10000.U(64.W)+ found2*1000.U(64.W)+found3*100.U(64.W)+found4*10.U(64.W)+found5
     io.output_found := found1 & found2 & found3 & found4 & found5
 
     // BETTER WAY WITH PARAMETERIZABLE HASH UNITS 
