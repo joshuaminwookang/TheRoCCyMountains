@@ -146,7 +146,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
 
   cmd.ready := !stallResp 
     // Command resolved if no stalls AND not issuing a load that will need a request
-  io.resp.valid := cmd.valid && doResp && 
+  io.resp.valid := cmd.valid && doResp 
     // Valid response if valid command, need a response, and no stalls
   io.resp.bits.rd := cmd.bits.inst.rd
     // Write to specified destination register address
