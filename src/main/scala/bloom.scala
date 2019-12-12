@@ -20,7 +20,7 @@ class BloomAccel(opcodes: OpcodeSet, val m: Int = 20000, val k: Int = 5)
 
 class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCModuleImp(outer) {
   // accelerator memory 
-  val bloom_bit_array = Reg(init = Vec.fill(20000)(0.U(1.W)))
+  val bloom_bit_array = Reg(VecInit(Seq.fill(20000)(0.(1.W)))
   val miss_counter = RegInit(0.U(64.W))
   val busy = RegInit(Bool(false))
 
@@ -38,8 +38,8 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
 
   // val mapModule = Module(new MapBloomModule(outer.m,outer.k))
   // val testModule = Module(new TestBloomModule(outer.m,outer.k)) 
-  // val mapModule = Module(new MapBloomModule)
-  // val testModule = Module(new TestBloomModule)
+  val mapModule = Module(new MapBloomModule)
+  val testModule = Module(new TestBloomModule)
   val debug = RegInit(0.U(64.W))
 
   // Hash computation
@@ -129,22 +129,22 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
 
   when (cmd.fire()) {
     when (doInit) {
-      bloom_bit_array := Reg(init = Vec.fill(20000)(0.U(1.W)))
+      bloom_bit_array := Reg(VecInit(Seq.fill(20000)(0.(1.W)))
       miss_counter := RegInit(0.U(64.W))
     }
-    // when (doMap) {
-    //   mapModule.io.input_value := hashed_string
-    //   // mapModule.io.input_reset := true.B
-    //   // bloom_bit_array := mapModule.io.output_hashBits 
-    //   debug := mapModule.io.output_hashIndex
-    // } 
-    // when (doTest) {
-    //   testModule.io.input_value := hashed_string
-    //   // testModule.io.input_bit_array := bloom_bit_array
-    //   // testModule.io.input_reset := true.B
-    //   miss_counter := miss_counter + ~testModule.io.output_found
-    //   debug := testModule.io.output_debug
-    // } 
+    when (doMap) {
+      mapModule.io.input_value := hashed_string
+      // mapModule.io.input_reset := true.B
+      // bloom_bit_array := mapModule.io.output_hashBits 
+      debug := mapModule.io.output_hashIndex
+    } 
+    when (doTest) {
+      testModule.io.input_value := hashed_string
+      // testModule.io.input_bit_array := bloom_bit_array
+      // testModule.io.input_reset := true.B
+      miss_counter := miss_counter + ~testModule.io.output_found
+      debug := testModule.io.output_debug
+    } 
   } 
 
   when (io.resp.fire()){
@@ -153,7 +153,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
 
   // bloom_bit_array := mapModule.io.output_hashBits 
   // testModule.io.input_bit_array := bloom_bit_array
-  // busy := mapModule.io.output_busy || testModule.io.output_busy
+  busy := mapModule.io.output_busy || testModule.io.output_busy
 
   // PROCESSOR RESPONSE INTERFACE
   // Control for communicate accelerator response back to host processor
@@ -167,7 +167,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   io.resp.bits.rd := cmd.bits.inst.rd
     // Write to specified destination register address
   io.resp.bits.data := bloom_bit_array(7081.U(64.W))*1000.U(64.W) + bloom_bit_array(9951.U(64.W))*100.U(64.W)
-  io.resp.bits.data := Mux(doMap, debug, miss_counter)
+  // io.resp.bits.data := Mux(doMap, debug, miss_counter)
     // Send out 
   io.busy := cmd.valid || busy
     // Be busy when have pending memory requests or committed possibility of pending requests
