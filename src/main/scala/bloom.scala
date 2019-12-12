@@ -20,7 +20,7 @@ class BloomAccel(opcodes: OpcodeSet, val m: Int = 20000, val k: Int = 5)
 
 class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCModuleImp(outer) {
   // accelerator memory 
-  val bloom_bit_array = Reg(VecInit(Seq.fill(20000)(0.U(1.W)))
+  val bloom_bit_array = Reg(VecInit(Seq.fill(20000)(0.U(1.W))))
   val miss_counter = RegInit(0.U(64.W))
   val busy = RegInit(Bool(false))
 
