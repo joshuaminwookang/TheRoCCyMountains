@@ -86,6 +86,12 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   // val found4 = RegInit(1.U(1.W))
   // val found5 = RegInit(1.U(1.W))
 
+  val found1 = Wire(UInt())
+  val found2 = Wire(UInt())
+  val found3 = Wire(UInt())
+  val found4 = Wire(UInt())
+  val found5 = Wire(UInt())
+
   found1 := bloom_bit_array(x1)
   found2 := bloom_bit_array(x2)
   found3 := bloom_bit_array(x3)
