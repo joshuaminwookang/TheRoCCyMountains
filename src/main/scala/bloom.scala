@@ -43,7 +43,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   // val mapModule = Module(new MapBloomModule)
   // val testModule = Module(new TestBloomModule)
   // val debug = RegInit(0.U(64.W))
-  val fresh = RegInit(Bool(true))
+  // val fresh = RegInit(Bool(true))
 
   // Hash computation
   val x0  = Wire(UInt())
@@ -99,7 +99,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
     when (doInit) {
       bloom_bit_array := Reg(init = Vec.fill(20000)(0.U(1.W)))
       miss_counter := RegInit(0.U(64.W))
-      fresh := Bool(true)
+      // fresh := Bool(true)
     }
     when (doMap) {
       bloom_bit_array(x1) := 1.U(1.W)
@@ -134,9 +134,9 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   // } 
 
 
-  when (io.resp.fire()){
-    fresh := Bool(false)
-  }
+  // when (io.resp.fire()){
+  //   fresh := Bool(false)
+  // }
 
 
   // PROCESSOR RESPONSE INTERFACE
@@ -146,7 +146,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
 
   cmd.ready := !stallResp 
     // Command resolved if no stalls AND not issuing a load that will need a request
-  io.resp.valid := cmd.valid && doResp && (!fresh)
+  io.resp.valid := cmd.valid && doResp && 
     // Valid response if valid command, need a response, and no stalls
   io.resp.bits.rd := cmd.bits.inst.rd
     // Write to specified destination register address
