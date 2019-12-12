@@ -2,7 +2,8 @@
 
 package bloom
 
-import chisel3._
+
+import Chisel._
 import chisel3.util._
 
 import freechips.rocketchip.config._
@@ -21,7 +22,7 @@ class BloomAccel(opcodes: OpcodeSet)
 
 class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCModuleImp(outer) {
   // accelerator memory 
-  val bloom_bit_array = RegInit(VecInit(Seq.fill(20000)(0.U(1.W))))
+  val bloom_bit_array = RegInit(Vec(Seq.fill(20000)(0.U(1.W))))
   val miss_counter = RegInit(0.U(64.W))
   val busy = RegInit(Bool(false))
 
@@ -39,9 +40,9 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
 
   // val mapModule = Module(new MapBloomModule(outer.m,outer.k))
   // val testModule = Module(new TestBloomModule(outer.m,outer.k)) 
-  val mapModule = Module(new MapBloomModule)
-  val testModule = Module(new TestBloomModule)
-  val debug = RegInit(0.U(64.W))
+  // val mapModule = Module(new MapBloomModule)
+  // val testModule = Module(new TestBloomModule)
+  // val debug = RegInit(0.U(64.W))
 
   // Hash computation
   val x0  = Wire(UInt())
