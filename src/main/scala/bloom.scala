@@ -151,7 +151,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   // PROCESSOR RESPONSE INTERFACE
   // Control for communicate accelerator response back to host processor
   val doResp = cmd.bits.inst.xd
-  val stallResp = doResp && !io.resp.ready
+  val stallResp = doResp && !io.resp.ready && busy
 
   cmd.ready := !stallResp 
     // Command resolved if no stalls AND not issuing a load that will need a request
