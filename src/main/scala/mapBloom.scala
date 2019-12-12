@@ -61,7 +61,6 @@ class MapBloomModule extends Module {
     val x5  = Wire(UInt())
     val y5  = Wire(UInt())
 
-
     // val done = (i === K.asUInt(64.W))
   
     // Hash computation
@@ -83,13 +82,13 @@ class MapBloomModule extends Module {
     x5 := (x4 + y4) % 20000.U(64.W)
     y5 := (y4 + 4.U(64.W)) % 20000.U(64.W)
 
-    io.output_hashBits(x1) := 1.U(1.W)
-    io.output_hashBits(x2) := 1.U(1.W)
-    io.output_hashBits(x3) := 1.U(1.W)
-    io.output_hashBits(x4) := 1.U(1.W)
-    io.output_hashBits(x5) := 1.U(1.W)
+    io.output_hashBits(x1(15,0)) := 1.U(1.W)
+    io.output_hashBits(x2(15,0)) := 1.U(1.W)
+    io.output_hashBits(x3(15,0)) := 1.U(1.W)
+    io.output_hashBits(x4(15,0)) := 1.U(1.W)
+    io.output_hashBits(x5(15,0)) := 1.U(1.W)
 
-    io.output_busy := (io.output_hashBits(x1) =/= 1.U(1.W)) || (io.output_hashBits(x2) =/= 1.U(1.W)) || (io.output_hashBits(x3) =/= 1.U(1.W)) || (io.output_hashBits(x4) =/= 1.U(1.W)) || (io.output_hashBits(x5) =/= 1.U(1.W))
+    io.output_busy := (io.output_hashBits(x1(15,0)) =/= 1.U(1.W)) || (io.output_hashBits(x2(15,0)) =/= 1.U(1.W)) || (io.output_hashBits(x3(15,0)) =/= 1.U(1.W)) || (io.output_hashBits(x4) =/= 1.U(1.W)) || (io.output_hashBits(x5(15,0)) =/= 1.U(1.W))
     io.output_hashIndex := x5
 
     // when(io.input_reset){
