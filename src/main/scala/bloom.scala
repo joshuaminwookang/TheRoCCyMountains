@@ -13,7 +13,7 @@ import freechips.rocketchip.tilelink._
 import freechips.rocketchip.tile._
 import freechips.rocketchip.util.InOrderArbiter
 
-class BloomAccel(opcodes: OpcodeSet, val m: Int = 20000, val k: Int = 5)
+class BloomAccel(opcodes: OpcodeSet)
 (implicit p: Parameters) extends LazyRoCC(
     opcodes) {
   override lazy val module = new BloomAccelImp(this)
