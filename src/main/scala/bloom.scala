@@ -44,59 +44,41 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   val debug = RegInit(0.U(64.W))
 
   // Hash computation
-  // val x0  = RegInit(0.U(64.W))
-  // val y0  = RegInit(0.U(64.W))
+  val x0  = Wire(UInt())
+  val y0  = Wire(UInt())
 
-  // val x1  = RegInit(0.U(64.W))
-  // val y1  = RegInit(0.U(64.W))
+  val x1  = Wire(UInt())
+  val y1  = Wire(UInt())
 
-  // val x2  = RegInit(0.U(64.W))
-  // val y2  = RegInit(0.U(64.W))
+  val x2  = Wire(UInt())
+  val y2  = Wire(UInt())
 
-  // val x3  = RegInit(0.U(64.W))
-  // val y3  = RegInit(0.U(64.W))
+  val x3  = Wire(UInt())
+  val y3  = Wire(UInt())
 
-  // val x4  = RegInit(0.U(64.W))
-  // val y4  = RegInit(0.U(64.W))
+  val x4  = Wire(UInt())
+  val y4  = Wire(UInt())
 
-  // val x5  = RegInit(0.U(64.W))
-  // val y5  = RegInit(0.U(64.W))
+  val x5  = Wire(UInt())
+  val y5  = Wire(UInt())
 
-  // val x0  = hashed_string
-  // val y0  = hashed_string >> 4.U(64.W)
+  x0 := hashed_string
+  y0 := hashed_string >> 4
 
-  // val x1  = (x0 + y0) % bloom_param_m 
-  // val y1  = (y0) % bloom_param_m 
+  x1 := (x0 + y0) % 20000.U(64.W)
+  y1 := (y0 + 0.U(64.W)) % 20000.U(64.W)
 
-  // val x2  = (x1 + y1) % bloom_param_m 
-  // val y2  = (y1 + 1.U(64.W)) % bloom_param_m 
+  x2 := (x1 + y1) % 20000.U(64.W)
+  y2 := (y1 + 1.U(64.W)) % 20000.U(64.W)
 
-  // val x3  = (x2 + y2) % bloom_param_m 
-  // val y3  = (y2 + 2.U(64.W)) % bloom_param_m 
+  x3 := (x2 + y2) % 20000.U(64.W)
+  y3 := (y2 + 2.U(64.W)) % 20000.U(64.W)
 
-  // val x4  = (x3 + y3) % bloom_param_m 
-  // val y4  = (y3 + 3.U(64.W)) % bloom_param_m 
+  x4 := (x3 + y3) % 20000.U(64.W)
+  y4 := (y3 + 3.U(64.W)) % 20000.U(64.W)
 
-  // val x5  = (x4 + y4) % bloom_param_m 
-  // val y5  = (y4 + 4.U(64.W)) % bloom_param_m 
-
-  // x0 := hashed_string
-  // y0 := hashed_string >> 4
-
-  // x1 := (x0 + y0) % 20000.U(64.W)
-  // y1 := (y0 + 0.U(64.W)) % 20000.U(64.W)
-
-  // x2 := (x1 + y1) % 20000.U(64.W)
-  // y2 := (y1 + 1.U(64.W)) % 20000.U(64.W)
-
-  // x3 := (x2 + y2) % 20000.U(64.W)
-  // y3 := (y2 + 2.U(64.W)) % 20000.U(64.W)
-
-  // x4 := (x3 + y3) % 20000.U(64.W)
-  // y4 := (y3 + 3.U(64.W)) % 20000.U(64.W)
-
-  // x5 := (x4 + y4) % 20000.U(64.W)
-  // y5 := (y4 + 4.U(64.W)) % 20000.U(64.W)
+  x5 := (x4 + y4) % 20000.U(64.W)
+  y5 := (y4 + 4.U(64.W)) % 20000.U(64.W)
 
   // val found1 = RegInit(1.U(1.W))
   // val found2 = RegInit(1.U(1.W))
@@ -104,49 +86,50 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   // val found4 = RegInit(1.U(1.W))
   // val found5 = RegInit(1.U(1.W))
 
-  // found1 := bloom_bit_array(x1)
-  // found2 := bloom_bit_array(x2)
-  // found3 := bloom_bit_array(x3)
-  // found4 := bloom_bit_array(x4)
-  // found5 := bloom_bit_array(x5)
+  found1 := bloom_bit_array(x1)
+  found2 := bloom_bit_array(x2)
+  found3 := bloom_bit_array(x3)
+  found4 := bloom_bit_array(x4)
+  found5 := bloom_bit_array(x5)
 
   // Custom function behaviors
-  // when (cmd.fire()) {
-  //   when (doInit) {
-  //     bloom_bit_array := Reg(init = Vec.fill(20000)(0.U(1.W)))
-  //     miss_counter := RegInit(0.U(64.W))
-  //   }
-  //   when (doMap) {
-  //     bloom_bit_array(x1) := 1.U(1.W)
-  //     bloom_bit_array(x2) := 1.U(1.W)
-  //     bloom_bit_array(x3) := 1.U(1.W)
-  //     bloom_bit_array(x4) := 1.U(1.W)
-  //     bloom_bit_array(x5) := 1.U(1.W)
-  //   } 
-  //   when (doTest) {
-  //     miss_counter := miss_counter + (found1 & found2 & found3 & found4 & found5)
-  //   } 
-  // } 
-
   when (cmd.fire()) {
     when (doInit) {
-      bloom_bit_array := RegInit(VecInit(Seq.fill(20000)(0.U(1.W))))
+      bloom_bit_array := Reg(init = Vec.fill(20000)(0.U(1.W)))
       miss_counter := RegInit(0.U(64.W))
     }
     when (doMap) {
-      mapModule.io.input_value := hashed_string
-      // mapModule.io.input_reset := true.B
-      bloom_bit_array := mapModule.io.output_hashBits 
-      debug := mapModule.io.output_hashIndex
+      bloom_bit_array(x1) := 1.U(1.W)
+      bloom_bit_array(x2) := 1.U(1.W)
+      bloom_bit_array(x3) := 1.U(1.W)
+      bloom_bit_array(x4) := 1.U(1.W)
+      bloom_bit_array(x5) := 1.U(1.W)
     } 
     when (doTest) {
-      testModule.io.input_value := hashed_string
-      testModule.io.input_bit_array := bloom_bit_array
-      // testModule.io.input_reset := true.B
-      miss_counter := miss_counter + ~testModule.io.output_found
-      debug := testModule.io.output_debug
+      miss_counter := miss_counter + (found1 & found2 & found3 & found4 & found5)
     } 
   } 
+
+  // when (cmd.fire()) {
+  //   when (doInit) {
+  //     bloom_bit_array := RegInit(VecInit(Seq.fill(20000)(0.U(1.W))))
+  //     miss_counter := RegInit(0.U(64.W))
+  //   }
+  //   when (doMap) {
+  //     mapModule.io.input_value := hashed_string
+  //     // mapModule.io.input_reset := true.B
+  //     bloom_bit_array := mapModule.io.output_hashBits 
+  //     debug := mapModule.io.output_hashIndex
+  //   } 
+  //   when (doTest) {
+  //     testModule.io.input_value := hashed_string
+  //     testModule.io.input_bit_array := bloom_bit_array
+  //     // testModule.io.input_reset := true.B
+  //     miss_counter := miss_counter + ~testModule.io.output_found
+  //     debug := testModule.io.output_debug
+  //   } 
+  // } 
+
 
   when (io.resp.fire()){
     busy := Bool(false)
@@ -167,7 +150,8 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
     // Valid response if valid command, need a response, and no stalls
   io.resp.bits.rd := cmd.bits.inst.rd
     // Write to specified destination register address
-  io.resp.bits.data := bloom_bit_array(7081.U(64.W))*1000.U(64.W) + bloom_bit_array(9951.U(64.W))*100.U(64.W)
+  // io.resp.bits.data := bloom_bit_array(7081.U(64.W))*1000.U(64.W) + bloom_bit_array(9951.U(64.W))*100.U(64.W)
+  io.resp.bits.data := x5*100000.U(64.W) + found1*10000.U(64.W)+ found2*1000.U(64.W)+found3*100.U(64.W)+found4*10.U(64.W)+found5
   // io.resp.bits.data := Mux(doMap, debug, miss_counter)
     // Send out 
   io.busy := cmd.valid || busy

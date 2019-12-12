@@ -82,7 +82,7 @@ class MapBloomModule extends Module {
     x5 := (x4 + y4) % 20000.U(64.W)
     y5 := (y4 + 4.U(64.W)) % 20000.U(64.W)
 
-    io.output_hashBits(x1(15,0)) := 1.U(1.W)
+    io.output_hashBits(x1) := 1.U(1.W)
     io.output_hashBits(x2(15,0)) := 1.U(1.W)
     io.output_hashBits(x3(15,0)) := 1.U(1.W)
     io.output_hashBits(x4(15,0)) := 1.U(1.W)
