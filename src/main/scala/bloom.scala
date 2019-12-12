@@ -143,6 +143,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
       // testModule.io.input_bit_array := bloom_bit_array
       // testModule.io.input_reset := true.B
       miss_counter := miss_counter + ~testModule.io.output_found
+      debug := output_debug
     } 
   } 
 
@@ -161,8 +162,8 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
     // Valid response if valid command, need a response, and no stalls
   io.resp.bits.rd := cmd.bits.inst.rd
     // Write to specified destination register address
-  //io.resp.bits.data := miss_counter
-  io.resp.bits.data := Mux(doMap, debug, miss_counter)
+  io.resp.bits.data := debug
+  // io.resp.bits.data := Mux(doMap, debug, miss_counter)
     // Send out 
   io.busy := cmd.valid || busy
     // Be busy when have pending memory requests or committed possibility of pending requests

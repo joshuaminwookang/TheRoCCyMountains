@@ -18,6 +18,7 @@ class TestBloomModule extends Module {
     val input_bit_array = Input(Reg(Vec(20000,UInt(1.W))))
     // val input_reset = Input(Bool())
     val output_found = Output(UInt(1.W))
+    val output_debug = Output(UInt(64.W))
     val output_busy = Output(Bool())
   }
     // states of this module 
@@ -87,7 +88,7 @@ class TestBloomModule extends Module {
     found5 := io.input_bit_array(x2)
 
     io.output_busy :=  (found1 =/= io.input_bit_array(x1)) || (found2 =/= io.input_bit_array(x2)) || (found3 =/= io.input_bit_array(x3)) || (found3 =/= io.input_bit_array(x3))|| (found3 =/= io.input_bit_array(x3))
-
+    io.output_debug := x5*100000 + found1*10000+ found2*1000+found3*100+found4*10+found5
     io.output_found := found1 & found2 & found3 & found4 & found5
 
     // BETTER WAY WITH PARAMETERIZABLE HASH UNITS 
