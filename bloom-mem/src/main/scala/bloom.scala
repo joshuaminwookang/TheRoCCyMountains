@@ -173,9 +173,9 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
     // Set this true to trigger an interrupt on the processor (not the case for our current simplified implementation)
 
   // MEMORY REQUEST INTERFACE
-  io.mem.req.valid := cmd.valid && doLoad && !busy && !stallResp
+  io.mem.req.valid := cmd.valid && !busy && !stallResp
   io.mem.req.bits.addr := cmd.bits.rs1
-  io.mem.req.bits.tag := mem_counter
+  io.mem.req.bits.tag := memCounter
   io.mem.req.bits.cmd := M_XRD // perform a load (M_XWR for stores)
   io.mem.req.bits.size := 64.U
   io.mem.req.bits.signed := Bool(false)
