@@ -1,5 +1,6 @@
 // RoCC Bloom filter accelerator
-// (c) 2019 Josh Kang and Andrew Thai
+// Now accessing shared D$ for data transfer
+// (c) 2019 Josh Kang 
 
 // Current version hard-codes the BF, m = 20,000 and k = 5
 // To-do: parameterize m and k; make accelerator more scalable
@@ -27,11 +28,12 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   // accelerator memory 
   val bloom_bit_array = RegInit(Vec(Seq.fill(20000)(0.U(1.W))))
   val miss_counter = RegInit(0.U(64.W))
-  // val busy = RegInit(Bool(false))
+  val busy = RegInit(Bool(false))
 
   val cmd = Queue(io.cmd)
   val funct = cmd.bits.inst.funct
-  val hashed_string = cmd.bits.rs1
+  //val hashed_string = cmd.bits.rs1
+  val hashed_string = Wire(UInt())
 
   // decode RoCC custom function
   val doInit = funct === UInt(0)
@@ -45,7 +47,24 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   // val debug = RegInit(0.U(64.W))
   // val fresh = RegInit(Bool(true))
 
-  // Hash computation
+  // Interactions with memory
+  val memRespTag = io.mem.resp.bits.tag
+  val memCounter = RegInit(0.U(64.W))
+
+  when (io.mem.resp.valid) {
+    hashed_string := io.mem.resp.bits.data
+    busy := Bool(false)
+    memCounter := memCounter + 1.U(64.W)
+  }
+
+  when (io.mem.req.fire()) {
+    busy := Bool(true)
+  }
+
+  // Wires for computing the k=5 hash values
+  // note that hashes are "incessantly" computed 
+  // Todo: use registers instead while ensuring correct timing
+
   val x0  = Wire(UInt())
   val y0  = Wire(UInt())
 
@@ -82,6 +101,7 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   x5 := (x4 + y4) % 20000.U(64.W)
   y5 := (y4 + 4.U(64.W)) % 20000.U(64.W)
 
+  // Wires for testing if an element is found in the Bloom filter
   val found1 = Wire(UInt())
   val found2 = Wire(UInt())
   val found3 = Wire(UInt())
@@ -134,42 +154,35 @@ class BloomAccelImp(outer: BloomAccel)(implicit p: Parameters) extends LazyRoCCM
   // } 
 
 
-  // when (io.resp.fire()){
-  //   fresh := Bool(false)
-  // }
-
-
   // PROCESSOR RESPONSE INTERFACE
   // Control for communicate accelerator response back to host processor
   val doResp = cmd.bits.inst.xd
   val stallResp = doResp && !io.resp.ready 
 
-  cmd.ready := !stallResp 
+  cmd.ready := !stallResp && !busy
     // Command resolved if no stalls AND not issuing a load that will need a request
-  io.resp.valid := cmd.valid && doResp 
+  io.resp.valid := cmd.valid && doResp && !io.mem.req.ready
     // Valid response if valid command, need a response, and no stalls
   io.resp.bits.rd := cmd.bits.inst.rd
     // Write to specified destination register address
-  // io.resp.bits.data := bloom_bit_array(7081.U(64.W))*1000.U(64.W) + bloom_bit_array(9951.U(64.W))*100.U(64.W)
   io.resp.bits.data := miss_counter
-  // io.resp.bits.data := Mux(doMap, debug, miss_counter)
-    // Send out 
+    // Send out current miss count
   io.busy := cmd.valid 
     // Be busy when have pending memory requests or committed possibility of pending requests
   io.interrupt := Bool(false)
     // Set this true to trigger an interrupt on the processor (not the case for our current simplified implementation)
+
+  // MEMORY REQUEST INTERFACE
+  io.mem.req.valid := cmd.valid && doLoad && !busy && !stallResp
+  io.mem.req.bits.addr := cmd.bits.rs1
+  io.mem.req.bits.tag := mem_counter
+  io.mem.req.bits.cmd := M_XRD // perform a load (M_XWR for stores)
+  io.mem.req.bits.size := 64.U
+  io.mem.req.bits.signed := Bool(false)
+  io.mem.req.bits.data := Bits(0) // we're not performing any stores...
+  io.mem.req.bits.phys := Bool(false)
 } 
 
-// class OpcodeSet(val opcodes: Seq[UInt]) {
-//   def |(set: OpcodeSet) =
-//     new OpcodeSet(this.opcodes ++ set.opcodes)
-
-//   def matches(oc: UInt) = opcodes.map(_ === oc).reduce(_ || _)
-// }
-
-// object OpcodeSet {
-//   def custom0 = new OpcodeSet(Seq(Bits("b0001011")))
-// }
 
 class WithBloomAccel extends Config ((site, here, up) => {
 
