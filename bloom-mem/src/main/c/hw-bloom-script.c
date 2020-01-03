@@ -158,21 +158,24 @@ int main(void)
     // HW: MAP
     start = rdcycle();                                                                                                                                      
     // asm volatile ("fence");
-    #ifdef TINY
-        hw_mapWordsFromArray(TINY);
-    #endif 
-    #ifdef TINYV2
-        hw_mapWordsFromArray(TINYV2);
-    #endif 
-    #ifdef TINYV3_MAP
-        hw_mapWordsFromArray(TINYV3_MAP);
-    #endif 
-    #ifdef TINYV3_TEST
-        hw_mapWordsFromArray(30);
-    #endif 
-    #ifdef SMALL       
-        returnValue = hw_mapToBloom(hashstring(small[i]));
-    #endif
+    // #ifdef TINY
+    //     hw_mapWordsFromArray(TINY);
+    // #endif 
+    // #ifdef TINYV2
+    //     hw_mapWordsFromArray(TINYV2);
+    // #endif 
+    // #ifdef TINYV3_MAP
+    //     hw_mapWordsFromArray(TINYV3_MAP);
+    // #endif 
+    // #ifdef TINYV3_TEST
+    //     hw_mapWordsFromArray(30);
+    // #endif 
+    // #ifdef SMALL       
+    //     returnValue = hw_mapToBloom(hashstring(small[i]));
+    // #endif
+
+    
+    
     // asm volatile ("fence");
     end = rdcycle();
     printf("MAP execution took %lu cycles\n", end - start);
