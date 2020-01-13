@@ -61,14 +61,14 @@ static inline unsigned long hw_initBloom()
 
 /*
  * Maps (already hashed) word to Bloom filter
- * @ params: hash value of input string to be mapped
+ * @ params: memory address where the hash value is stored
  * @ returns: hash value of input string
  */
-static inline unsigned long hw_mapToBloom(long hash)
+static inline unsigned long hw_mapToBloom(long addr)
 {
     unsigned long rd;
     // asm volatile ("fence");
-	ROCC_INSTRUCTION_DS(2, rd, hash, 1);
+	ROCC_INSTRUCTION_DS(2, rd, addr, 1);
     // asm volatile ("fence");
 	return rd;
 }
