@@ -19,7 +19,7 @@ class BloomAccel (implicit p: Parameters) extends LazyRoCC {
   override lazy val module = new BloomAccelImp(this)
 }
 
-class BloomAccelImp(implicit p: Parameters) extends LazyRoCCModule(outer) with HasCoreParameters {
+class BloomAccelImp(outer: BloomAccel) extends LazyRoCCModule(outer) with HasCoreParameters {
   // accelerator memory 
   val bloom_bit_array = RegInit(Vec(Seq.fill(20000)(0.U(1.W))))
   val miss_counter = RegInit(0.U(64.W))
@@ -65,7 +65,7 @@ class BloomAccelImp(implicit p: Parameters) extends LazyRoCCModule(outer) with H
 
   x1 := (x0 + y0) % 20000.U(64.W)
   y1 := (y0 + 0.U(64.W)) % 20000.U(64.W)
-
+n
   x2 := (x1 + y1) % 20000.U(64.W)
   y2 := (y1 + 1.U(64.W)) % 20000.U(64.W)
 
