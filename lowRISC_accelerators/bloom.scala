@@ -1,10 +1,7 @@
 // RoCC Bloom filter accelerator
 // (c) 2019 Josh Kang and Andrew Thai
 
-// Current version hard-codes the BF, m = 20,000 and k = 5
-// To-do: parameterize m and k; make accelerator more scalable
-
-package freechips.rocketchip.tile
+// Current version hard-codes the BF m=1000 and k=5
 
 import Chisel._
 
@@ -15,13 +12,15 @@ import freechips.rocketchip.rocket._
 import freechips.rocketchip.tilelink._
 import freechips.rocketchip.util.InOrderArbiter
 
+// ADAPTED for SOAR (c) 2020 Josh Kang
+
 class BloomAccel (implicit p: Parameters) extends LazyRoCC {
   override lazy val module = new BloomAccelImp(this)
 }
 
 class BloomAccelImp(outer: BloomAccel) extends LazyRoCCModule(outer) with HasCoreParameters {
   // accelerator memory 
-  val bloom_bit_array = RegInit(Vec(Seq.fill(20000)(0.U(1.W))))
+  val bloom_bit_array = RegInit(Vec(Seq.fill(1000)(0.U(1.W))))
   val miss_counter = RegInit(0.U(64.W))
   // val busy = RegInit(Bool(false))
 
@@ -64,19 +63,19 @@ class BloomAccelImp(outer: BloomAccel) extends LazyRoCCModule(outer) with HasCor
   y0 := hashed_string >> 4
 
   x1 := (x0 + y0) % 20000.U(64.W)
-  y1 := (y0 + 0.U(64.W)) % 20000.U(64.W)
+  y1 := (y0 + 0.U(64.W)) % 1000.U(64.W)
 n
-  x2 := (x1 + y1) % 20000.U(64.W)
-  y2 := (y1 + 1.U(64.W)) % 20000.U(64.W)
+  x2 := (x1 + y1) % 1000.U(64.W)
+  y2 := (y1 + 1.U(64.W)) % 1000.U(64.W)
 
-  x3 := (x2 + y2) % 20000.U(64.W)
-  y3 := (y2 + 2.U(64.W)) % 20000.U(64.W)
+  x3 := (x2 + y2) % 1000.U(64.W)
+  y3 := (y2 + 2.U(64.W)) % 1000.U(64.W)
 
-  x4 := (x3 + y3) % 20000.U(64.W)
-  y4 := (y3 + 3.U(64.W)) % 20000.U(64.W)
+  x4 := (x3 + y3) % 1000.U(64.W)
+  y4 := (y3 + 3.U(64.W)) % 1000.U(64.W)
 
-  x5 := (x4 + y4) % 20000.U(64.W)
-  y5 := (y4 + 4.U(64.W)) % 20000.U(64.W)
+  x5 := (x4 + y4) % 1000.U(64.W)
+  y5 := (y4 + 4.U(64.W)) % 1000.U(64.W)
 
   val found1 = Wire(UInt())
   val found2 = Wire(UInt())
@@ -93,7 +92,7 @@ n
   // Custom function behaviors
   when (cmd.fire()) {
     when (doInit) {
-      bloom_bit_array := Reg(init = Vec.fill(20000)(0.U(1.W)))
+      bloom_bit_array := Reg(init = Vec.fill(1000)(0.U(1.W)))
       miss_counter := RegInit(0.U(64.W))
       // fresh := Bool(true)
     }
@@ -111,7 +110,7 @@ n
 
   // when (cmd.fire()) {
   //   when (doInit) {
-  //     bloom_bit_array := RegInit(VecInit(Seq.fill(20000)(0.U(1.W))))
+  //     bloom_bit_array := RegInit(VecInit(Seq.fill(1000)(0.U(1.W))))
   //     miss_counter := RegInit(0.U(64.W))
   //   }
   //   when (doMap) {

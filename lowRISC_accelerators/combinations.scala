@@ -13,7 +13,7 @@ import freechips.rocketchip.util.InOrderArbiter
 
 
 //Wrapper for the accelerator
-class Combinations(implicit p: Parameters) extends LazyRoCC(opcodes) {
+class Combinations(implicit p: Parameters) extends LazyRoCC {
     override lazy val module = new CombinationsImp(this)
 }
 
@@ -34,12 +34,9 @@ class CombinationsImp(outer: Combinations)(implicit p: Parameters) extends LazyR
     val fastLength = Mux(io.cmd.fire(), io.cmd.bits.rs1, length)
     val fastPrevious = Mux(io.cmd.fire(), io.cmd.bits.rs2, previous)
 
-
     //Answers for each function: FixedWeight, General, Ranged, then memory versions of each (functions 0-6)
-    val outputs = Array(nextCombination.fixedWeight(fastLength(4,0), fastPrevious), nextCombination.generalCombinations(fastLength(4,0), fastPrevious),
-                        nextCombination.rangedCombinations(fastLength(4,0), fastPrevious, fastLength(9,5), fastLength(14,10)))
-
-
+    val outputs = Array(nextCombination.fixedWeight(fastLength(5,0), fastPrevious), nextCombination.generalCombinations(fastLength(5,0), fastPrevious), nextCombination.rangedCombinations(fastLength(5,0), fastPrevious, fastLength(11,6), fastLength(17,12)))
+    
     //Command and response states
     io.cmd.ready := state === s_idle
     io.resp.valid := state === s_resp
@@ -107,7 +104,7 @@ class CombinationsImp(outer: Combinations)(implicit p: Parameters) extends LazyR
 
     //Controls for accessing memory
     val cycleOver = combinationStream === nextCombination.doneSignal
-    val finished = cycleOver && memAccesses === 0.U
+    val finished = cycleOver //&& memAccesses === 0.U
 
     //Switch out of memory mode when finished
     when(tryStore && finished) {
@@ -119,11 +116,11 @@ class CombinationsImp(outer: Combinations)(implicit p: Parameters) extends LazyR
     io.mem.req.valid := tryStore && !cycleOver
     io.busy := tryStore
     io.mem.req.bits.addr := currentAddress
-    io.mem.req.bits.tag :=  combinationStream(9,0) //Change for out-of-order
+    io.mem.req.bits.tag :=  combinationStream(5,0) //Change for out-of-order
     io.mem.req.bits.cmd := 1.U
     io.mem.req.bits.data := combinationStream //combinationStream
-    io.mem.req.bits.size := log2Ceil(8).U
-    io.mem.req.bits.signed := Bool(false)
+//    io.mem.req.bits.size := log2Ceil(8).U
+//    io.mem.req.bits.signed := Bool(false)
     io.mem.req.bits.phys := Bool(false)
 
     //Always false
@@ -138,16 +135,16 @@ object memoryAccess {
     def cycleCombinations(constraints: UInt, getNext: Bool, reset: Bool, kind: Int) : UInt = {
         val initial = Wire(UInt(64.W)) //The first value of the cycle
         if(kind == 1) { //The general cycle starts and ends with all 1s
-            initial := (1.U << constraints(4,0)) - 1.U
+            initial := (1.U << constraints(5,0)) - 1.U
         } else { //The other cycles start with lower 1s filled according to allowed weights
-            initial := (1.U << constraints(9,5)) - 1.U
+            initial := (1.U << constraints(11,6)) - 1.U
         }
 
         val nextSent = Reg(UInt(64.W)) //The value currently saved for storing to memory
         val result = kind match { //Calculate next value as the last is being stored
-            case 0 => nextCombination.fixedWeight(constraints(4,0), nextSent)
-            case 1 => nextCombination.generalCombinations(constraints(4,0), nextSent)
-            case 2 => nextCombination.rangedCombinations(constraints(4,0), nextSent, constraints(9,5), constraints(14,10))
+            case 0 => nextCombination.fixedWeight(constraints(5,0), nextSent)
+            case 1 => nextCombination.generalCombinations(constraints(5,0), nextSent)
+            case 2 => nextCombination.rangedCombinations(constraints(5,0), nextSent, constraints(11,6), constraints(17,12))
         }
 
         //Cycle by one when next value requested
@@ -183,7 +180,7 @@ object nextCombination {
 
         //Rotate masked bits to get the result, return if the cycle isn't over yet
         val result = previous + indexTrailed - fixed //Rotate the right side of the string starting from indexShift, or the whole string if indexShift not set
-        val stopper = 1.U(1.W) << length(4,0) //Set the bit to the left of the binary string
+        val stopper = 1.U(1.W) << length(5,0) //Set the bit to the left of the binary string
 
         //Fill result with all 1s if finished
         Mux(result >> length =/= 0.U, doneSignal, result % stopper) //The end of the cycle has been reached if the bit at stopper is set in the new string
@@ -201,10 +198,10 @@ object nextCombination {
         //Find the last spot in the mask, to use for rotating the 0th bit
         val lastTemp = Wire(UInt(32.W))
         lastTemp :=  trailed + 1.U //If there is a valid 01, this is the last bit
-        val lastLimit = 1.U << (length(4,0) - 1.U) //Otherwise use the final bit
+        val lastLimit = 1.U << (length(5,0) - 1.U) //Otherwise use the final bit
         val lastPosition = Mux(lastTemp > lastLimit || lastTemp === 0.U, lastLimit, lastTemp) //Choose which bit position to use
 
-        val cap = 1.U << length(4,0) //One bit beyond the width of the string
+        val cap = 1.U << length(5,0) //One bit beyond the width of the string
         val first = Mux(mask < cap, 1.U & previous, 1.U & ~previous) //Flip the first bit if there is no valid 01
         val shifted = (previous & mask) >> 1.U //Shift the masked region
         val rotated = Mux(first === 1.U, shifted | lastPosition, shifted) //Move the first bit to the end of the shifting
@@ -225,13 +222,13 @@ object nextCombination {
         //Find the last spot in the mask, used for rotating the 0th bit
         val lastTemp = Wire(UInt(32.W))
         lastTemp :=  trailed + 1.U //If there is a valid '01', this is the last bit
-        val lastLimit = 1.U << (length(4,0) - 1.U) //Otherwise use the string's final bit
+        val lastLimit = 1.U << (length(5,0) - 1.U) //Otherwise use the string's final bit
         val lastPosition = Mux(lastTemp > lastLimit || lastTemp === 0.U, lastLimit, lastTemp) //Choose which bit position to use
 
         val count = Wire(UInt(32.W))
 	    count := PopCount(previous(31,0)) //Count the number of set bits in the string, which should be within the weight constraints
 
-        val cap = 1.U << length(4,0) //Set a bit one beyond the string's width
+        val cap = 1.U << length(5,0) //Set a bit one beyond the string's width
         val flipped = 1.U & ~previous //Take the complement of the 0th bit
         val valid = Mux(flipped === 0.U, count > minWeight, count < maxWeight) //Check if still a valid weight with that bit changed
         val first = Mux(mask < cap || !valid, 1.U & previous, flipped) //Flip the first bit if there is no valid 01
