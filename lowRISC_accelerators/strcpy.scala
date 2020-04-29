@@ -29,7 +29,7 @@ class Strcpy(implicit p: Parameters) extends LazyRoCC {
  * and/or locking pages to physical memory.
  */
 class StrcpyImp(outer: Strcpy)(implicit p: Parameters)
-   extends LazyRoCCModuleImp(outer) with HasCoreParameters
+   extends LazyRoCCModule(outer) with HasCoreParameters
 {
    // states of the state machine
   val idleState :: readState :: writeState :: doneState :: Nil = Enum(Bits(),4)
@@ -65,8 +65,10 @@ class StrcpyImp(outer: Strcpy)(implicit p: Parameters)
    val done = (state === writeState) && (!request) && (data === 0.U)
 
    io.mem.req.bits.cmd := cmd   // R/W
-   io.mem.req.bits.size := 0.U  // log2(n); n is one byte
-   io.mem.req.bits.signed := false.B  // value is unsigned
+// io.mem.req.bits.size := 0.U  // log2(n); n is one byte
+// io.mem.req.bits.signed := false.B  // value is unsigned
+
+
    io.mem.req.bits.data := data  // write data
    io.mem.req.bits.phys := false.B  // pointers are virtual addresses
    io.mem.req.bits.addr := ptr   // R/W address

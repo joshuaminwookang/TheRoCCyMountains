@@ -9,13 +9,16 @@
  * This hardware performs only slightly better than software, even on very
  * long strings.  Power performance has yet to be measured.
  */
-package freechips.rocketship.tile
+
+package freechips.rocketchip.tile
 
 import Chisel._
-import freechips.rocketchip.tile._
-import freechips.rocketchip.config._
-import freechips.rocketchip.diplomacy._
-import freechips.rocketchip.rocket.{TLBConfig, HellaCacheReq}
+import freechips.rocketchip.tilelink._ //For LazyRoCC
+import freechips.rocketchip.config._ //For Config
+import freechips.rocketchip.diplomacy._ //For LazyModule
+import freechips.rocketchip.rocket._
+import freechips.rocketchip.subsystem._
+import freechips.rocketchip.util.InOrderArbiter
 
 // ADAPTED for SOAR (c) 2020 Josh Kang
 
@@ -66,8 +69,10 @@ class FullStrcmpImp(outer: FullStrcmp)(implicit p: Parameters)
     */
    // static portions of the request
    io.mem.req.bits.cmd := 0.U   // read
-   io.mem.req.bits.size := 0.U  // log2(n); n is one byte
-   io.mem.req.bits.signed := false.B  // value is unsigned
+//   io.mem.req.bits.size := 0.U  // log2(n); n is one byte
+//   io.mem.req.bits.signed := false.B  // value is unsigned
+
+
    io.mem.req.bits.data := Bits(0)  // data written (never used)
    io.mem.req.bits.phys := false.B  // pointers are virtual addresses
    io.mem.req.bits.addr := Mux(source === 0.U, aPtr, bPtr)  //

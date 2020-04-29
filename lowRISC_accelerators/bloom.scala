@@ -2,14 +2,14 @@
 // (c) 2019 Josh Kang and Andrew Thai
 
 // Current version hard-codes the BF m=1000 and k=5
+package freechips.rocketchip.tile
 
 import Chisel._
-
-import freechips.rocketchip.config._
-import freechips.rocketchip.subsystem._
-import freechips.rocketchip.diplomacy._
+import freechips.rocketchip.tilelink._ //For LazyRoCC
+import freechips.rocketchip.config._ //For Config
+import freechips.rocketchip.diplomacy._ //For LazyModule
 import freechips.rocketchip.rocket._
-import freechips.rocketchip.tilelink._
+import freechips.rocketchip.subsystem._
 import freechips.rocketchip.util.InOrderArbiter
 
 // ADAPTED for SOAR (c) 2020 Josh Kang
@@ -64,7 +64,7 @@ class BloomAccelImp(outer: BloomAccel) extends LazyRoCCModule(outer) with HasCor
 
   x1 := (x0 + y0) % 20000.U(64.W)
   y1 := (y0 + 0.U(64.W)) % 1000.U(64.W)
-n
+
   x2 := (x1 + y1) % 1000.U(64.W)
   y2 := (y1 + 1.U(64.W)) % 1000.U(64.W)
 
@@ -155,13 +155,3 @@ n
     // Set this true to trigger an interrupt on the processor (not the case for our current simplified implementation)
 } 
 
-// class OpcodeSet(val opcodes: Seq[UInt]) {
-//   def |(set: OpcodeSet) =
-//     new OpcodeSet(this.opcodes ++ set.opcodes)
-
-//   def matches(oc: UInt) = opcodes.map(_ === oc).reduce(_ || _)
-// }
-
-// object OpcodeSet {
-//   def custom0 = new OpcodeSet(Seq(Bits("b0001011")))
-// }
